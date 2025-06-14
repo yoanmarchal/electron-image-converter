@@ -53,7 +53,7 @@ jobs:
           cache: npm
 
       - name: Setup Linux dependencies
-        if: matrix.os == "ubuntu-latest"
+        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
@@ -76,8 +76,10 @@ jobs:
         shell: bash
 
       - name: Build Windows
-        if: matrix.os == "windows-latest"
+        if: matrix.os == 'windows-latest'
         env:
+          EP_GH_RETRIES: 3
+          EP_GH_TIMEOUT: 30000
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EP_GH_IGNORE_TIME: "true"
@@ -86,8 +88,10 @@ jobs:
         run: npm run build:windows
 
       - name: Build Linux
-        if: matrix.os == "ubuntu-latest"
+        if: matrix.os == 'ubuntu-latest'
         env:
+          EP_GH_RETRIES: 3
+          EP_GH_TIMEOUT: 30000
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EP_GH_IGNORE_TIME: "true"
@@ -95,9 +99,19 @@ jobs:
           EP_PRE_RELEASE: true
         run: npm run build:linux
 
+      - name: Verify Windows build
+        if: matrix.os == 'windows-latest'
+        run: |
+          if [ ! -d "release" ]; then
+            echo "Release directory not found"
+            exit 1
+          fi
+          
       - name: Publish Windows
-        if: matrix.os == "windows-latest"
+        if: matrix.os == 'windows-latest'
         env:
+          EP_GH_RETRIES: 3
+          EP_GH_TIMEOUT: 30000
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EP_GH_IGNORE_TIME: "true"
@@ -105,9 +119,19 @@ jobs:
           EP_PRE_RELEASE: true
         run: npm run publish:windows
 
+      - name: Verify Linux build
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          if [ ! -d "release" ]; then
+            echo "Release directory not found"
+            exit 1
+          fi
+          
       - name: Publish Linux
-        if: matrix.os == "ubuntu-latest"
+        if: matrix.os == 'ubuntu-latest'
         env:
+          EP_GH_RETRIES: 3
+          EP_GH_TIMEOUT: 30000
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EP_GH_IGNORE_TIME: "true"
@@ -115,13 +139,7 @@ jobs:
           EP_PRE_RELEASE: true
         run: npm run publish:linux
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.os }}-artifacts
-          path: |
-            release/
-            !release/*-unpacked/
-            !release/.icon-ico/
-          compression-level: 0
-          retention-days: 5
+      - name: Clean up
+        run: |
+          rm -rf release/*-unpacked/ release/.icon-ico/
+        shell: bash
