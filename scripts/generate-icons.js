@@ -1,18 +1,18 @@
-const Jimp = require('jimp');
-const fs = require('fs');
-const path = require('path');
+import { read } from 'jimp';
+import { existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
 
 async function generateIcons() {
   // Tailles d'icônes requises pour Windows
   const sizes = [16, 24, 32, 48, 64, 128, 256];
   
   try {
-    const image = await Jimp.read('public/logo.svg');
+    const image = await read('public/logo.svg');
     
     // Créer le dossier build s'il n'existe pas
-    const buildDir = path.join('assets', 'icons');
-    if (!fs.existsSync(buildDir)) {
-      fs.mkdirSync(buildDir, { recursive: true });
+    const buildDir = join('assets', 'icons');
+    if (!existsSync(buildDir)) {
+      mkdirSync(buildDir, { recursive: true });
     }
 
     // Générer PNG pour chaque taille
@@ -20,7 +20,7 @@ async function generateIcons() {
       await image
         .clone()
         .resize(size, size)
-        .writeAsync(path.join(buildDir, `${size}x${size}.png`));
+        .writeAsync(join(buildDir, `${size}x${size}.png`));
     }
 
     console.log('Icons generated successfully!');
