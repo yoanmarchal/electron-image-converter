@@ -8,21 +8,20 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
-  const [isDarkMode, setIsDarkMode] = React.useState(
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-  );
-
-  React.useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
-    
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
+  const [isDarkMode, setIsDarkMode] = React.useState(() => {
+    const darkMode = localStorage.getItem('darkMode');
+    const initialDarkMode = darkMode === 'true';
+    if (initialDarkMode) {
+      document.documentElement.classList.add('dark');
+    }
+    return initialDarkMode;
+  });
   
   const toggleDarkMode = () => {
+    const newDarkMode = !isDarkMode;
     document.documentElement.classList.toggle('dark');
-    setIsDarkMode(!isDarkMode);
+    localStorage.setItem('darkMode', String(newDarkMode));
+    setIsDarkMode(newDarkMode);
   };
 
   return (
