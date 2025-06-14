@@ -31,7 +31,7 @@ const ImageList: React.FC<ImageListProps> = ({
 
   return (
     <div className="card h-full flex flex-col min-h-0">
-      <div className="flex justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex justify-between pb-1 border-b border-gray-200 dark:border-gray-700">
         <h3 className="font-medium text-gray-700 dark:text-gray-300">
           Images ({images.length})
         </h3>
@@ -47,7 +47,7 @@ const ImageList: React.FC<ImageListProps> = ({
         )}
       </div>
       
-      <div className="overflow-y-auto flex-1 min-h-0 p-4">
+      <div className="overflow-y-auto flex-1 min-h-0 py-1">
         <div className="space-y-3">
           {images.map((image) => (
             <div 

@@ -25,6 +25,7 @@ function createWindow() {
       contextIsolation: true,
       preload: join(__dirname, 'preload.js'),
       webSecurity: true,
+      additionalArguments: ['--enable-features=NativeFileSystemAPI'],
     },
     show: false,
     backgroundColor: '#f8fafc',

@@ -17,49 +17,52 @@ interface SelectedFile {
 
 const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, className = '' }) => {
   const [isDragging, setIsDragging] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const imageFiles: ImageFile[] = [];
+    if (acceptedFiles.length === 0) return;
     
-    for (const file of acceptedFiles) {
-      try {
-        // Créer un URL pour la prévisualisation
-        const preview = URL.createObjectURL(file);
-        
-        // Lire le fichier comme un ArrayBuffer
-        const buffer = await new Promise<ArrayBuffer>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as ArrayBuffer);
-          reader.onerror = reject;
-          reader.readAsArrayBuffer(file);
-        });
+    setIsProcessing(true);
+    try {
+      // Traiter tous les fichiers en parallèle
+      const processedFiles = await Promise.all(
+        acceptedFiles.map(async (file) => {
+          try {
+            const preview = URL.createObjectURL(file);
+            const arrayBuffer = await file.arrayBuffer();
+            const uint8Array = new Uint8Array(arrayBuffer);
+            
+            const tempPath = await window.electron.ipcRenderer.invoke('handle-dropped-file', {
+              buffer: Array.from(uint8Array),
+              name: file.name
+            });
 
-        // Envoyer le buffer au processus principal pour créer un fichier temporaire
-        const tempPath = await window.electron.ipcRenderer.invoke('handle-dropped-file', {
-          buffer: Array.from(new Uint8Array(buffer)),
-          name: file.name
-        });
-
-        // Obtenir les informations sur l'image
-        const info = await window.electron.ipcRenderer.invoke('get-image-info', tempPath);
-        
-        if (info) {
-          imageFiles.push({
-            id: uuidv4(),
-            name: file.name,
-            path: tempPath,
-            size: info.size,
-            preview: preview,
-            status: 'pending',
-          });
-        }
-      } catch (error) {
-        console.error('Error processing file:', file.name, error);
+            const info = await window.electron.ipcRenderer.invoke('get-image-info', tempPath);
+            
+            if (info) {
+              return {
+                id: uuidv4(),
+                name: file.name,
+                path: tempPath,
+                size: info.size,
+                preview: preview,
+                status: 'pending',
+              };
+            }
+            return null;
+          } catch (error) {
+            console.error('Error processing file:', file.name, error);
+            return null;
+          }
+        })
+      );
+      
+      const validFiles = processedFiles.filter(Boolean) as ImageFile[];
+      if (validFiles.length > 0) {
+        onFilesSelected(validFiles);
       }
-    }
-    
-    if (imageFiles.length > 0) {
-      onFilesSelected(imageFiles);
+    } finally {
+      setIsProcessing(false);
     }
   }, [onFilesSelected]);
 
@@ -112,21 +115,28 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
         isDragging 
           ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' 
           : 'border-gray-300 dark:border-gray-600 hover:border-teal-400 dark:hover:border-teal-700'
-      } ${isConverting ? 'opacity-50 pointer-events-none' : ''} ${className}`}
+      } ${(isConverting || isProcessing) ? 'opacity-50 pointer-events-none' : ''} ${className}`}
     >
       <input {...getInputProps()} />
       
       <div className={`p-4 rounded-full bg-teal-100 dark:bg-teal-900/50 mb-4 transition-transform duration-300 ${
         isDragging ? 'scale-110' : ''
       }`}>
-        <Upload className={`h-10 w-10 text-teal-600 dark:text-teal-400 transition-transform duration-300 ${
-          isDragging ? 'rotate-12' : ''
-        }`} />
+        {isProcessing ? (
+          <div className="animate-spin">
+            <Upload className="h-10 w-10 text-teal-600 dark:text-teal-400" />
+          </div>
+        ) : (
+          <Upload className={`h-10 w-10 text-teal-600 dark:text-teal-400 transition-transform duration-300 ${
+            isDragging ? 'rotate-12' : ''
+          }`} />
+        )}
       </div>
       
       <div className="text-center px-4">
         <p className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-          {isDragging ? 'Drop images here' : 'Drag and drop images here'}
+          {isProcessing ? 'Processing images...' :
+           isDragging ? 'Drop images here' : 'Drag and drop images here'}
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
           Or click to select files
