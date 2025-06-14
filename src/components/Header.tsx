@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
             <div className="flex-shrink-0 flex items-center">
               <ImageDown className="h-8 w-8 text-teal-500" />
               <span className="ml-2 text-xl font-semibold text-gray-900 dark:text-white">
-                WebP Converter
+                Image Converter
               </span>
             </div>
             

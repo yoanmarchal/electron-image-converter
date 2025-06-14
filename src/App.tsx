@@ -35,6 +35,7 @@ export interface ImageFile {
 export interface ConversionSettings {
   quality: number;
   outputDir: string;
+  format: 'webp' | 'jpg' | 'png' | 'avif';
 }
 
 export interface HistoryItem {
@@ -53,6 +54,7 @@ function App() {
   const [settings, setSettings] = useState<ConversionSettings>({
     quality: 80,
     outputDir: '',
+    format: 'webp',
   });
   const [isConverting, setIsConverting] = useState(false);
   const [conversionHistory, setConversionHistory] = useState<HistoryItem[]>([]);
@@ -144,6 +146,7 @@ function App() {
           filePath: image.path,
           outputDir: settings.outputDir,
           quality: settings.quality,
+          format: settings.format,
         });
         
         if (result.success) {

@@ -133,7 +133,7 @@ ipcMain.handle('get-image-info', async (_, filePath) => {
   }
 });
 
-ipcMain.handle('convert-image', async (_, { filePath, outputDir, quality }) => {
+ipcMain.handle('convert-image', async (_, { filePath, outputDir, quality, format = 'webp' }) => {
   try {
     // Validation des paramètres d'entrée
     if (!filePath || typeof filePath !== 'string' || filePath.trim() === '') {
@@ -147,17 +147,34 @@ ipcMain.handle('convert-image', async (_, { filePath, outputDir, quality }) => {
     }
 
     console.log(`Début de la conversion : ${filePath}`);
-    console.log(`Paramètres : qualité=${quality}, dossier de sortie=${outputDir}`);
+    console.log(`Paramètres : qualité=${quality}, format=${format}, dossier de sortie=${outputDir}`);
     
     const filename = basename(filePath, extname(filePath));
-    const outputPath = join(outputDir, `${filename}.webp`);
+    const outputPath = join(outputDir, `${filename}.${format}`);
     
     console.log(`Chemin de sortie : ${outputPath}`);
     
-    // Utiliser sharp pour la conversion
-    await sharp(filePath)
-      .webp({ quality: quality })
-      .toFile(outputPath);
+    // Utiliser sharp pour la conversion selon le format choisi
+    let sharpInstance = sharp(filePath);
+    
+    switch (format) {
+      case 'webp':
+        sharpInstance = sharpInstance.webp({ quality });
+        break;
+      case 'jpg':
+        sharpInstance = sharpInstance.jpeg({ quality });
+        break;
+      case 'png':
+        sharpInstance = sharpInstance.png({ quality });
+        break;
+      case 'avif':
+        sharpInstance = sharpInstance.avif({ quality });
+        break;
+      default:
+        throw new Error(`Format non supporté : ${format}`);
+    }
+    
+    await sharpInstance.toFile(outputPath);
     
     // Vérifier si le fichier de sortie existe et a une taille
     const outputExists = statSync(outputPath);

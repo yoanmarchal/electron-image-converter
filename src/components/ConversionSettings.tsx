@@ -2,6 +2,13 @@ import React from 'react';
 import { Folder, Sliders, Play } from 'lucide-react';
 import { ConversionSettings as Settings } from '../App';
 
+const FORMAT_OPTIONS = [
+  { value: 'webp', label: 'WebP - Meilleur rapport qualité/taille' },
+  { value: 'jpg', label: 'JPEG - Compatible partout' },
+  { value: 'png', label: 'PNG - Sans perte avec transparence' },
+  { value: 'avif', label: 'AVIF - Format moderne haute performance' },
+] as const;
+
 interface ConversionSettingsProps {
   settings: Settings;
   onSettingsChange: (settings: Partial<Settings>) => void;
@@ -24,6 +31,11 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
     onSettingsChange({ quality });
   };
 
+  const handleFormatChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const format = e.target.value as Settings['format'];
+    onSettingsChange({ format });
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -36,10 +48,30 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            WebP Quality: {settings.quality}%
+            Format de sortie
+          </label>
+          <select
+            value={settings.format}
+            onChange={handleFormatChange}
+            className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            disabled={isConverting}
+            title="Format de sortie"
+            aria-label="Format de sortie"
+          >
+            {FORMAT_OPTIONS.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Qualité: {settings.quality}%
           </label>
           <div className="flex items-center">
-            <span className="text-xs text-gray-500 mr-2">Low</span>
+            <span className="text-xs text-gray-500 mr-2">Basse</span>
             <input
               type="range"
               min="0"
@@ -48,13 +80,16 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
               onChange={handleQualityChange}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-teal-600 dark:bg-gray-700"
               disabled={isConverting}
+              title="Qualité de l'image"
+              aria-label="Qualité de l'image"
+              name="quality"
             />
-            <span className="text-xs text-gray-500 ml-2">High</span>
+            <span className="text-xs text-gray-500 ml-2">Haute</span>
           </div>
           <div className="text-xs text-gray-500 mt-1">
-            {settings.quality < 30 ? 'Low quality, smaller file size' : 
-             settings.quality < 70 ? 'Balanced quality and size' : 
-             'High quality, larger file size'}
+            {settings.quality < 30 ? 'Qualité basse, fichier plus petit' : 
+             settings.quality < 70 ? 'Qualité équilibrée' : 
+             'Haute qualité, fichier plus grand'}
           </div>
         </div>
         
@@ -98,7 +133,7 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
           ) : (
             <>
               <Play className="h-4 w-4 mr-2 group-hover:animate-pulse" />
-              Convert to WebP
+              Convert Images
             </>
           )}
         </button>
