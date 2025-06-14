@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
     "electron:build": "npm run build && electron-builder",
-    "publish": "electron-builder --publish always"
+    "electron:publish": "electron-builder --publish always",
+    "release": "npm run build && npm run electron:publish"
   },
   "repository": {
     "type": "git",
@@ -91,7 +92,9 @@
     "publish": {
       "provider": "github",
       "releaseType": "release",
-      "private": false
+      "private": false,
+      "releaseNotes": "Automatic release from CI",
+      "publishAutoUpdate": true
     },
     "directories": {
       "buildResources": "assets",

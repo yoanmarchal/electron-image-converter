@@ -39,16 +39,11 @@ jobs:
           npm ci
           npm run lint --if-present
 
-      - name: Build Electron app
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build
-
-      - name: Publish Electron app
+      - name: Build and Publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run publish
+        run: npm run release
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
