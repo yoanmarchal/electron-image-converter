@@ -1,6 +1,7 @@
 {
   "name": "image-converter",
   "private": true,
+  "type": "module",
   "version": "1.0.1",
   "description": "Convert images app",
   "main": "electron/main.js",
@@ -76,11 +77,15 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "portable",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "icon": "assets/icons/256x256.png"
@@ -138,6 +143,5 @@
         "imageconverter"
       ]
     }
-  },
-  "type": "module"
+  }
 }

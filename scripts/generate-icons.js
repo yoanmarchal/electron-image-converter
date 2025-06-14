@@ -1,4 +1,4 @@
-import { read } from 'jimp';
+import sharp from 'sharp';
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
@@ -7,8 +7,6 @@ async function generateIcons() {
   const sizes = [16, 24, 32, 48, 64, 128, 256];
   
   try {
-    const image = await read('public/logo.svg');
-    
     // Créer le dossier build s'il n'existe pas
     const buildDir = join('assets', 'icons');
     if (!existsSync(buildDir)) {
@@ -17,15 +15,16 @@ async function generateIcons() {
 
     // Générer PNG pour chaque taille
     for (const size of sizes) {
-      await image
-        .clone()
+      await sharp('public/logo.svg')
         .resize(size, size)
-        .writeAsync(join(buildDir, `${size}x${size}.png`));
+        .png()
+        .toFile(join(buildDir, `${size}x${size}.png`));
+      console.log(`✓ Généré ${size}x${size}.png`);
     }
 
-    console.log('Icons generated successfully!');
-  } catch (err) {
-    console.error('Error generating icons:', err);
+    console.log('✓ Génération des icônes terminée avec succès');
+  } catch (error) {
+    console.error('❌ Erreur lors de la génération des icônes:', error);
     process.exit(1);
   }
 }
