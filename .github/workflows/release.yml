@@ -9,6 +9,7 @@ jobs:
   release:
     permissions:
       contents: write
+      packages: read
 
     runs-on: ${{ matrix.os }}
     strategy:
@@ -46,7 +47,19 @@ jobs:
       - name: Publish Electron app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run publish
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-artifacts
+          path: |
+            release/
+            !release/*-unpacked/
+            !release/.icon-ico/
+          compression-level: 0
+          retention-days: 5
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
