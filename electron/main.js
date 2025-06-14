@@ -6,6 +6,7 @@ import { statSync } from 'fs';
 import { promisify } from 'util';
 import Store from 'electron-store';
 import { exec } from 'child_process';
+import { promises } from 'fs';
 
 const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -120,7 +121,7 @@ ipcMain.handle('get-last-output-dir', () => {
 
 ipcMain.handle('get-image-info', async (_, filePath) => {
   try {
-    const { stdout } = await execAsync(`magick identify -format "%w %h %m" "${filePath}"`);
+    const { stdout } = await execAsync(`convert "${filePath}" -format "%w %h %m" info:`);
     const [width, height, format] = stdout.trim().split(' ');
     return {
       format,
@@ -136,13 +137,44 @@ ipcMain.handle('get-image-info', async (_, filePath) => {
 
 ipcMain.handle('convert-image', async (_, { filePath, outputDir, quality }) => {
   try {
+    // Validation des paramètres d'entrée
+    if (!filePath || typeof filePath !== 'string' || filePath.trim() === '') {
+      throw new Error('Le chemin du fichier source est invalide ou manquant');
+    }
+    if (!outputDir || typeof outputDir !== 'string' || outputDir.trim() === '') {
+      throw new Error('Le dossier de destination est invalide ou manquant');
+    }
+    if (!quality || typeof quality !== 'number' || quality < 1 || quality > 100) {
+      throw new Error('La qualité doit être un nombre entre 1 et 100');
+    }
+
+    console.log(`Début de la conversion : ${filePath}`);
+    console.log(`Paramètres : qualité=${quality}, dossier de sortie=${outputDir}`);
+    
     const filename = basename(filePath, extname(filePath));
     const outputPath = join(outputDir, `${filename}.webp`);
     
-    await execAsync(`magick "${filePath}" -quality ${quality} "${outputPath}"`);
+    console.log(`Chemin de sortie : ${outputPath}`);
+    
+    const command = `convert "${filePath}" -quality ${quality} "${outputPath}"`;
+    console.log(`Commande exécutée : ${command}`);
+    
+    const { stdout, stderr } = await execAsync(command);
+    if (stderr) {
+      console.warn('Avertissements de conversion :', stderr);
+    }
+    
+    // Vérifier si le fichier de sortie existe et a une taille
+    const outputExists = statSync(outputPath);
+    if (!outputExists || outputExists.size === 0) {
+      throw new Error('Le fichier de sortie est vide ou n\'existe pas');
+    }
     
     const originalSize = statSync(filePath).size;
-    const newSize = statSync(outputPath).size;
+    const newSize = outputExists.size;
+    
+    console.log(`Conversion réussie : ${outputPath}`);
+    console.log(`Taille originale : ${originalSize}, Nouvelle taille : ${newSize}`);
     
     return {
       success: true,
@@ -153,11 +185,22 @@ ipcMain.handle('convert-image', async (_, { filePath, outputDir, quality }) => {
       compressionRatio: ((1 - (newSize / originalSize)) * 100).toFixed(2),
     };
   } catch (error) {
-    console.error('Error converting image:', error);
+    console.error('Erreur détaillée de conversion :', error);
+    console.error('Stack trace :', error.stack);
+    let errorMessage = error.message;
+    
+    // Vérifier si le fichier source existe
+    try {
+      statSync(filePath);
+    } catch (e) {
+      errorMessage = `Le fichier source n'existe pas : ${filePath}`;
+    }
+    
     return {
       success: false,
-      error: error.message,
+      error: `Erreur de conversion : ${errorMessage}`,
       originalPath: filePath,
+      command: command, // Utiliser la commande définie dans le bloc try
     };
   }
 });
@@ -190,5 +233,17 @@ ipcMain.handle('open-file', async (_, filePath) => {
   } catch (error) {
     console.error('Error opening file:', error);
     return false;
+  }
+});
+
+ipcMain.handle('handle-dropped-file', async (_, { buffer, name }) => {
+  try {
+    const tempPath = join(app.getPath('temp'), `webp-converter-${Date.now()}-${name}`);
+    const fileBuffer = Buffer.from(buffer);
+    await promises.writeFile(tempPath, fileBuffer);
+    return tempPath;
+  } catch (error) {
+    console.error('Error handling dropped file:', error);
+    throw error;
   }
 });

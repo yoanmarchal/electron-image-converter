@@ -18,26 +18,48 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting }) =>
   const [isDragging, setIsDragging] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    // Convert File objects to ImageFile objects
     const imageFiles: ImageFile[] = [];
     
     for (const file of acceptedFiles) {
-      const id = uuidv4();
-      // For dropped files, use FileReader to create a preview
-      const reader = new FileReader();
-      const preview = URL.createObjectURL(file);
-      
-      imageFiles.push({
-        id,
-        name: file.name,
-        path: (file as any).path || '',  // Pour les fichiers glissés-déposés depuis Electron
-        size: file.size,
-        preview,
-        status: 'pending',
-      });
+      try {
+        // Créer un URL pour la prévisualisation
+        const preview = URL.createObjectURL(file);
+        
+        // Lire le fichier comme un ArrayBuffer
+        const buffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as ArrayBuffer);
+          reader.onerror = reject;
+          reader.readAsArrayBuffer(file);
+        });
+
+        // Envoyer le buffer au processus principal pour créer un fichier temporaire
+        const tempPath = await window.electron.ipcRenderer.invoke('handle-dropped-file', {
+          buffer: Array.from(new Uint8Array(buffer)),
+          name: file.name
+        });
+
+        // Obtenir les informations sur l'image
+        const info = await window.electron.ipcRenderer.invoke('get-image-info', tempPath);
+        
+        if (info) {
+          imageFiles.push({
+            id: uuidv4(),
+            name: file.name,
+            path: tempPath,
+            size: info.size,
+            preview: preview,
+            status: 'pending',
+          });
+        }
+      } catch (error) {
+        console.error('Error processing file:', file.name, error);
+      }
     }
     
-    onFilesSelected(imageFiles);
+    if (imageFiles.length > 0) {
+      onFilesSelected(imageFiles);
+    }
   }, [onFilesSelected]);
 
   const handleSelectFiles = async () => {
