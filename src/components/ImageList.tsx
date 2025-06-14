@@ -30,8 +30,8 @@ const ImageList: React.FC<ImageListProps> = ({
   }
 
   return (
-    <div className="card h-full flex flex-col">
-      <div className="flex justify-between mb-3">
+    <div className="card h-full flex flex-col min-h-0">
+      <div className="flex justify-between p-4 border-b border-gray-200 dark:border-gray-700">
         <h3 className="font-medium text-gray-700 dark:text-gray-300">
           Images ({images.length})
         </h3>
@@ -47,7 +47,7 @@ const ImageList: React.FC<ImageListProps> = ({
         )}
       </div>
       
-      <div className="overflow-auto flex-1">
+      <div className="overflow-y-auto flex-1 min-h-0 p-4">
         <div className="space-y-3">
           {images.map((image) => (
             <div 
@@ -84,6 +84,8 @@ const ImageList: React.FC<ImageListProps> = ({
                     <button
                       onClick={() => onRemoveImage(image.id)}
                       className="text-gray-400 hover:text-red-500 transition-colors"
+                      title="Remove image"
+                      aria-label="Remove image"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

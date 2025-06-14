@@ -7,6 +7,7 @@ import { ImageFile } from '../App';
 interface DropZoneProps {
   onFilesSelected: (files: ImageFile[]) => void;
   isConverting: boolean;
+  className?: string;
 }
 
 interface SelectedFile {
@@ -14,7 +15,7 @@ interface SelectedFile {
   previewUrl: string;
 }
 
-const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting }) => {
+const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, className = '' }) => {
   const [isDragging, setIsDragging] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -111,7 +112,7 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting }) =>
         isDragging 
           ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' 
           : 'border-gray-300 dark:border-gray-600 hover:border-teal-400 dark:hover:border-teal-700'
-      } ${isConverting ? 'opacity-50 pointer-events-none' : ''}`}
+      } ${isConverting ? 'opacity-50 pointer-events-none' : ''} ${className}`}
     >
       <input {...getInputProps()} />
       

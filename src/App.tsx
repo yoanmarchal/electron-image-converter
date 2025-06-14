@@ -219,14 +219,15 @@ function App() {
       <main className="flex-1 overflow-hidden">
         {activeTab === 'convert' ? (
           <div className="flex flex-col h-full">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 h-full">
-              <div className="md:col-span-2 flex flex-col h-full">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 h-full min-h-0">
+              <div className="md:col-span-2 flex flex-col min-h-0">
                 <DropZone 
                   onFilesSelected={handleFilesSelected} 
                   isConverting={isConverting}
+                  className="flex-shrink-0"
                 />
                 
-                <div className="mt-4 flex-1 overflow-hidden">
+                <div className="mt-4 flex-1 min-h-0">
                   <ImageList 
                     images={images} 
                     onRemoveImage={handleRemoveImage}
@@ -235,15 +236,17 @@ function App() {
                 </div>
               </div>
               
-              <div className="card h-fit">
-                <ConversionSettings 
-                  settings={settings}
-                  onSettingsChange={handleSettingsChange}
-                  onSelectOutputDir={handleSelectOutputDir}
-                  onConvert={handleConvertImages}
-                  isConverting={isConverting}
-                  imageCount={images.length}
-                />
+              <div className="h-fit overflow-y-auto">
+                <div className="card sticky top-0">
+                  <ConversionSettings 
+                    settings={settings}
+                    onSettingsChange={handleSettingsChange}
+                    onSelectOutputDir={handleSelectOutputDir}
+                    onConvert={handleConvertImages}
+                    isConverting={isConverting}
+                    imageCount={images.length}
+                  />
+                </div>
               </div>
             </div>
           </div>
