@@ -28,7 +28,7 @@ jobs:
           cache: npm
 
       - name: Setup Linux dependencies
-        if: matrix.os == ubuntu-latest
+        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libglib2.0-dev libnss3 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libxss1
@@ -48,6 +48,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run publish
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-artifacts
+          path: |
+            release/
+            !release/*-unpacked/
+            !release/.icon-ico/
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
