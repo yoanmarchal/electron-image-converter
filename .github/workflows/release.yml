@@ -6,7 +6,30 @@ on:
       - "v*.*.*"
 
 jobs:
-  release:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.create-release.outputs.id }}
+      upload_url: ${{ steps.create-release.outputs.upload_url }}
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Create Release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+          prerelease: false
+
+  build:
+    needs: create-release
     permissions:
       contents: write
       packages: read
@@ -15,6 +38,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
+      fail-fast: false
 
     steps:
       - name: Check out Git repository
@@ -29,7 +53,7 @@ jobs:
           cache: npm
 
       - name: Setup Linux dependencies
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == "ubuntu-latest"
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
@@ -38,48 +62,58 @@ jobs:
           sudo apt-get install -y --no-install-recommends mono-devel ca-certificates-mono
 
       - name: Install dependencies
+        run: npm ci
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Update version in package.json
         run: |
-          npm ci
+          jq ".version = \"${{ steps.get_version.outputs.version }}\"" package.json > temp.json
+          mv temp.json package.json
+        shell: bash
 
       - name: Build Windows
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == "windows-latest"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EP_GH_IGNORE_TIME: "true"
+          EP_RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
+          EP_PRE_RELEASE: true
         run: npm run build:windows
 
       - name: Build Linux
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == "ubuntu-latest"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EP_GH_IGNORE_TIME: "true"
+          EP_RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
+          EP_PRE_RELEASE: true
         run: npm run build:linux
 
       - name: Publish Windows
-        if: matrix.os == 'windows-latest'
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 20
-          max_attempts: 3
-          retry_wait_seconds: 60
-          shell: bash
-          command: |
-            export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-            export GH_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-            npm run publish:windows
+        if: matrix.os == "windows-latest"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EP_GH_IGNORE_TIME: "true"
+          EP_RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
+          EP_PRE_RELEASE: true
+        run: npm run publish:windows
 
       - name: Publish Linux
-        if: matrix.os == 'ubuntu-latest'
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 20
-          max_attempts: 3
-          retry_wait_seconds: 60
-          shell: bash
-          command: |
-            export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-            export GH_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-            npm run publish:linux
+        if: matrix.os == "ubuntu-latest"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EP_GH_IGNORE_TIME: "true"
+          EP_RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
+          EP_PRE_RELEASE: true
+        run: npm run publish:linux
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
