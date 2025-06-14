@@ -3,12 +3,10 @@ import { join, basename, extname, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import isDev from 'electron-is-dev';
 import { statSync } from 'fs';
-import { promisify } from 'util';
 import Store from 'electron-store';
-import { exec } from 'child_process';
 import { promises } from 'fs';
+import sharp from 'sharp';
 
-const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Initialize store for app settings
@@ -121,12 +119,11 @@ ipcMain.handle('get-last-output-dir', () => {
 
 ipcMain.handle('get-image-info', async (_, filePath) => {
   try {
-    const { stdout } = await execAsync(`convert "${filePath}" -format "%w %h %m" info:`);
-    const [width, height, format] = stdout.trim().split(' ');
+    const metadata = await sharp(filePath).metadata();
     return {
-      format,
-      width: parseInt(width),
-      height: parseInt(height),
+      format: metadata.format,
+      width: metadata.width,
+      height: metadata.height,
       size: statSync(filePath).size,
     };
   } catch (error) {
@@ -156,13 +153,10 @@ ipcMain.handle('convert-image', async (_, { filePath, outputDir, quality }) => {
     
     console.log(`Chemin de sortie : ${outputPath}`);
     
-    const command = `convert "${filePath}" -quality ${quality} "${outputPath}"`;
-    console.log(`Commande exécutée : ${command}`);
-    
-    const { stdout, stderr } = await execAsync(command);
-    if (stderr) {
-      console.warn('Avertissements de conversion :', stderr);
-    }
+    // Utiliser sharp pour la conversion
+    await sharp(filePath)
+      .webp({ quality: quality })
+      .toFile(outputPath);
     
     // Vérifier si le fichier de sortie existe et a une taille
     const outputExists = statSync(outputPath);
@@ -200,7 +194,6 @@ ipcMain.handle('convert-image', async (_, { filePath, outputDir, quality }) => {
       success: false,
       error: `Erreur de conversion : ${errorMessage}`,
       originalPath: filePath,
-      command: command, // Utiliser la commande définie dans le bloc try
     };
   }
 });
