@@ -7,6 +7,21 @@ import Store from 'electron-store';
 import { promises } from 'fs';
 import sharp from 'sharp';
 
+// Configurer la mise à jour automatique et la journalisation
+import log from 'electron-log';
+
+// Configuration des journaux
+log.transports.file.level = 'info';
+log.info('Application starting...');
+
+const { updateElectronApp } = await import('update-electron-app');
+updateElectronApp({
+  logger: log,
+  repo: 'yoanmarchal/electron-image-converter',
+  updateInterval: '1 hour',
+  notifyUser: true
+});
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Initialize store for app settings
