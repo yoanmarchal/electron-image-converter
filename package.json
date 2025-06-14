@@ -13,7 +13,9 @@
     "icons": "node scripts/generate-icons.js",
     "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
     "electron:build": "npm run icons && npm run build && electron-builder",
-    "release": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --publish always --x64 --win"
+    "release:windows": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --win --x64 --publish always",
+    "release:linux": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --linux --x64 --publish always",
+    "release": "npm run release:windows"
   },
   "repository": {
     "type": "git",

@@ -31,18 +31,29 @@ jobs:
       - name: Setup Linux dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
+          sudo dpkg --add-architecture i386
           sudo apt-get update
-          sudo apt-get install -y libglib2.0-dev libnss3 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libxss1
+          sudo apt-get install -y --no-install-recommends libglib2.0-dev libnss3 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libxss1
+          sudo apt-get install -y --no-install-recommends wine64 wine32
+          sudo apt-get install -y --no-install-recommends mono-devel ca-certificates-mono
 
       - name: Install dependencies
         run: |
           npm ci
 
-      - name: Build and Publish
+      - name: Build and Publish Windows
+        if: matrix.os == 'windows-latest'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run release
+        run: npm run release:windows
+
+      - name: Build and Publish Linux
+        if: matrix.os == 'ubuntu-latest'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run release:linux
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
