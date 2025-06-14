@@ -108,14 +108,9 @@ ipcMain.handle('select-output-dir', async () => {
   });
 
   if (!result.canceled) {
-    store.set('lastOutputDir', result.filePaths[0]);
     return result.filePaths[0];
   }
   return null;
-});
-
-ipcMain.handle('get-last-output-dir', () => {
-  return store.get('lastOutputDir', '');
 });
 
 ipcMain.handle('get-image-info', async (_, filePath) => {

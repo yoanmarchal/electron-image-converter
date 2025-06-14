@@ -1,5 +1,5 @@
 import React from 'react';
-import { Folder, Sliders, Play } from 'lucide-react';
+import { Folder, Sliders, Play, Trash2 } from 'lucide-react';
 import { ConversionSettings as Settings } from '../App';
 
 const FORMAT_OPTIONS = [
@@ -31,17 +31,12 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
     onSettingsChange({ quality });
   };
 
-  const handleFormatChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const format = e.target.value as Settings['format'];
-    onSettingsChange({ format });
-  };
-
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold flex items-center text-gray-900 dark:text-white">
           <Sliders className="h-5 w-5 mr-2 text-teal-600" />
-          Conversion Settings
+          Paramètres de conversion
         </h2>
       </div>
       
@@ -52,7 +47,7 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
           </label>
           <select
             value={settings.format}
-            onChange={handleFormatChange}
+            onChange={(e) => onSettingsChange({ format: e.target.value as Settings['format'] })}
             className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             disabled={isConverting}
             title="Format de sortie"
@@ -92,41 +87,56 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
              'Haute qualité, fichier plus grand'}
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Dossier de sortie (optionnel)
           </label>
-          <div className="space-y-1">
-            <div className="flex">
-              <div className="flex-1 overflow-hidden">
-                <div className="truncate text-sm p-2 border border-gray-300 dark:border-gray-700 rounded-l-md bg-gray-50 dark:bg-gray-800 h-full">
-                  {settings.outputDir || 'Même dossier que l\'original'}
-                </div>
+          <div className="flex items-center">
+            <div className="flex-1 overflow-hidden">
+              <div className="truncate text-sm p-2 border border-gray-300 dark:border-gray-700 rounded-l-md bg-gray-50 dark:bg-gray-800 h-full">
+                {settings.outputDir || 'Même dossier que l\'original'}
               </div>
+            </div>
+            {settings.outputDir ? (
+              <>
+                <button
+                  type="button"
+                  onClick={onSelectOutputDir}
+                  className="flex items-center justify-center px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-r-md bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                  disabled={isConverting}
+                  title="Changer le dossier de sortie"
+                  aria-label="Changer le dossier de sortie"
+                >
+                  <Folder className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onSettingsChange({ outputDir: '' })}
+                  className="ml-2 text-sm text-gray-500 hover:text-red-600 dark:hover:text-red-400 flex items-center"
+                  disabled={isConverting}
+                  title="Revenir au dossier d'origine"
+                  aria-label="Revenir au dossier d'origine"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </>
+            ) : (
               <button
                 type="button"
                 onClick={onSelectOutputDir}
                 className="flex items-center justify-center px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-r-md bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
                 disabled={isConverting}
-                title="Sélectionner le dossier de sortie"
-                aria-label="Sélectionner le dossier de sortie"
+                title="Sélectionner un dossier de sortie personnalisé"
+                aria-label="Sélectionner un dossier de sortie personnalisé"
               >
                 <Folder className="h-4 w-4 text-gray-700 dark:text-gray-300" />
               </button>
-            </div>
-            <button
-              type="button"
-              onClick={() => onSettingsChange({ outputDir: '' })}
-              className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-              disabled={!settings.outputDir || isConverting}
-            >
-              Réinitialiser au dossier d'origine
-            </button>
+            )}
           </div>
         </div>
       </div>
-      
+
       <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           type="button"
@@ -140,16 +150,16 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Converting...
+              Conversion en cours...
             </>
           ) : (
             <>
               <Play className="h-4 w-4 mr-2 group-hover:animate-pulse" />
-              Convert Images
+              Convertir les images
             </>
           )}
         </button>
-        
+
         {imageCount === 0 && !isConverting && (
           <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
             Veuillez ajouter des images à convertir

@@ -53,27 +53,11 @@ function App() {
   const [images, setImages] = useState<ImageFile[]>([]);
   const [settings, setSettings] = useState<ConversionSettings>({
     quality: 80,
-    outputDir: '',
+    outputDir: '', // Dossier de sortie vide par défaut
     format: 'webp',
   });
   const [isConverting, setIsConverting] = useState(false);
   const [conversionHistory, setConversionHistory] = useState<HistoryItem[]>([]);
-
-  // Load last used output directory
-  useEffect(() => {
-    async function loadLastOutputDir() {
-      try {
-        const dir = await window.electron.ipcRenderer.invoke('get-last-output-dir');
-        if (dir) {
-          setSettings(prev => ({ ...prev, outputDir: dir }));
-        }
-      } catch (error) {
-        console.error('Failed to load last output directory:', error);
-      }
-    }
-    
-    loadLastOutputDir();
-  }, []);
 
   // Load conversion history
   useEffect(() => {
@@ -85,7 +69,7 @@ function App() {
         console.error('Failed to load conversion history:', error);
       }
     }
-    
+
     loadConversionHistory();
   }, []);
 
@@ -121,21 +105,21 @@ function App() {
       alert('Veuillez ajouter au moins une image');
       return;
     }
-    
+
     setIsConverting(true);
-    
+
     const pendingImages = images.filter(img => img.status === 'pending');
-    
+
     for (const image of pendingImages) {
       // Update status to converting
-      setImages(prev => 
-        prev.map(img => 
-          img.id === image.id 
-            ? { ...img, status: 'converting' } 
+      setImages(prev =>
+        prev.map(img =>
+          img.id === image.id
+            ? { ...img, status: 'converting' }
             : img
         )
       );
-      
+
       try {
         const result = await window.electron.ipcRenderer.invoke('convert-image', {
           filePath: image.path,
@@ -143,24 +127,24 @@ function App() {
           quality: settings.quality,
           format: settings.format,
         });
-        
+
         if (result.success) {
           // Update with conversion results
-          setImages(prev => 
-            prev.map(img => 
-              img.id === image.id 
-                ? { 
-                    ...img, 
+          setImages(prev =>
+            prev.map(img =>
+              img.id === image.id
+                ? {
+                    ...img,
                     status: 'converted',
                     originalSize: result.originalSize,
                     newSize: result.newSize,
                     compressionRatio: result.compressionRatio,
                     outputPath: result.outputPath,
-                  } 
+                  }
                 : img
             )
           );
-          
+
           // Add to history
           const historyItem = {
             id: image.id,
@@ -171,15 +155,15 @@ function App() {
             compressionRatio: result.compressionRatio,
             timestamp: new Date().toISOString(),
           };
-          
+
           await window.electron.ipcRenderer.invoke('save-conversion-history', historyItem);
           setConversionHistory(prev => [historyItem, ...prev]);
         } else {
           // Update with error
-          setImages(prev => 
-            prev.map(img => 
-              img.id === image.id 
-                ? { ...img, status: 'error', error: result.error } 
+          setImages(prev =>
+            prev.map(img =>
+              img.id === image.id
+                ? { ...img, status: 'error', error: result.error }
                 : img
             )
           );
@@ -187,16 +171,16 @@ function App() {
       } catch (error) {
         console.error('Conversion error:', error);
         // Update with error
-        setImages(prev => 
-          prev.map(img => 
-            img.id === image.id 
-              ? { ...img, status: 'error', error: 'Unknown error occurred' } 
+        setImages(prev =>
+          prev.map(img =>
+            img.id === image.id
+              ? { ...img, status: 'error', error: 'Unknown error occurred' }
               : img
           )
         );
       }
     }
-    
+
     setIsConverting(false);
   };
 
@@ -209,34 +193,34 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <Header 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab} 
+      <Header
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
       />
-      
+
       <main className="flex-1 overflow-hidden">
         {activeTab === 'convert' ? (
           <div className="flex flex-col h-full">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 h-full min-h-0">
               <div className="md:col-span-2 flex flex-col min-h-0">
-                <DropZone 
-                  onFilesSelected={handleFilesSelected} 
+                <DropZone
+                  onFilesSelected={handleFilesSelected}
                   isConverting={isConverting}
                   className="flex-shrink-0"
                 />
-                
+
                 <div className="mt-4 flex-1 min-h-0">
-                  <ImageList 
-                    images={images} 
+                  <ImageList
+                    images={images}
                     onRemoveImage={handleRemoveImage}
                     onRemoveAllImages={handleRemoveAllImages}
                   />
                 </div>
               </div>
-              
+
               <div className="h-fit overflow-y-auto">
                 <div className="card sticky top-0">
-                  <ConversionSettings 
+                  <ConversionSettings
                     settings={settings}
                     onSettingsChange={handleSettingsChange}
                     onSelectOutputDir={handleSelectOutputDir}
@@ -249,15 +233,15 @@ function App() {
             </div>
           </div>
         ) : (
-          <ConversionHistory 
-            history={conversionHistory} 
-            onClearHistory={handleClearHistory} 
+          <ConversionHistory
+            history={conversionHistory}
+            onClearHistory={handleClearHistory}
           />
         )}
       </main>
-      
-      <StatusBar 
-        imageCount={images.length} 
+
+      <StatusBar
+        imageCount={images.length}
         convertedCount={images.filter(img => img.status === 'converted').length}
         errorCount={images.filter(img => img.status === 'error').length}
         isConverting={isConverting}
