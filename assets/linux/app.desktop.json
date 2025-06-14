@@ -1,0 +1,17 @@
+{
+  "productName": "Image Converter",
+  "name": "image-converter",
+  "description": "A simple and efficient image converter supporting multiple formats including WebP, AVIF, JPEG, and PNG.",
+  "genericName": "Image Converter",
+  "categories": ["Graphics", "2DGraphics", "RasterGraphics"],
+  "mimeType": ["image/jpeg", "image/png", "image/webp", "image/avif"],
+  "requires": [
+    "libglib2.0-0",
+    "libnss3",
+    "libatk1.0-0",
+    "libatk-bridge2.0-0",
+    "libgdk-pixbuf2.0-0",
+    "libgtk-3-0",
+    "libxss1"
+  ]
+}
