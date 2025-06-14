@@ -117,13 +117,8 @@ function App() {
   };
 
   const handleConvertImages = async () => {
-    if (!settings.outputDir) {
-      alert('Please select an output directory');
-      return;
-    }
-    
     if (images.length === 0) {
-      alert('Please add at least one image');
+      alert('Veuillez ajouter au moins une image');
       return;
     }
     

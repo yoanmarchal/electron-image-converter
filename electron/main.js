@@ -139,18 +139,18 @@ ipcMain.handle('convert-image', async (_, { filePath, outputDir, quality, format
     if (!filePath || typeof filePath !== 'string' || filePath.trim() === '') {
       throw new Error('Le chemin du fichier source est invalide ou manquant');
     }
-    if (!outputDir || typeof outputDir !== 'string' || outputDir.trim() === '') {
-      throw new Error('Le dossier de destination est invalide ou manquant');
-    }
     if (!quality || typeof quality !== 'number' || quality < 1 || quality > 100) {
       throw new Error('La qualité doit être un nombre entre 1 et 100');
     }
 
     console.log(`Début de la conversion : ${filePath}`);
-    console.log(`Paramètres : qualité=${quality}, format=${format}, dossier de sortie=${outputDir}`);
+    
+    // Toujours utiliser le dossier d'origine si aucun dossier de sortie n'est spécifié
+    const effectiveOutputDir = outputDir?.trim() || dirname(filePath);
+    console.log(`Paramètres : qualité=${quality}, format=${format}, dossier de sortie=${effectiveOutputDir}`);
     
     const filename = basename(filePath, extname(filePath));
-    const outputPath = join(outputDir, `${filename}.${format}`);
+    const outputPath = join(effectiveOutputDir, `${filename}.${format}`);
     
     console.log(`Chemin de sortie : ${outputPath}`);
     
