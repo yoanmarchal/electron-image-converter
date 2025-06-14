@@ -15,8 +15,8 @@
     "electron:build": "npm run icons && npm run build && electron-builder",
     "build:windows": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --win --x64 --publish never",
     "build:linux": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --linux --x64 --publish never",
-    "publish:windows": "cross-env DEBUG=electron-builder electron-builder --win --x64 --publish always --config.publish.provider=github --config.publish.owner=yoanmarchal --config.publish.repo=electron-image-converter",
-    "publish:linux": "cross-env DEBUG=electron-builder electron-builder --linux --x64 --publish always --config.publish.provider=github --config.publish.owner=yoanmarchal --config.publish.repo=electron-image-converter",
+    "publish:windows": "cross-env DEBUG=electron-builder electron-builder --win --x64 --publish onTag",
+    "publish:linux": "cross-env DEBUG=electron-builder electron-builder --linux --x64 --publish onTag",
     "release": "npm run release:windows"
   },
   "repository": {
@@ -72,12 +72,14 @@
     "typescript-eslint": "^8.3.0",
     "vite": "^5.4.2",
     "vite-plugin-electron-renderer": "^0.14.5"
-  },
-  "build": {
+  },    "build": {
     "appId": "com.yoanmarchal.imageconverter",
     "productName": "Image Converter",
     "asar": true,
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "forceCodeSigning": false,
+    "npmRebuild": false,
+    "buildDependenciesFromSource": true,
     "win": {
       "target": [
         {
@@ -134,7 +136,12 @@
       "provider": "github",
       "owner": "yoanmarchal",
       "repo": "electron-image-converter",
-      "releaseType": "draft"
+      "releaseType": "draft",
+      "publishAutoUpdate": false,
+      "timeout": 600000,
+      "uploadRetry": 3,
+      "uploadRetryInterval": 30000,
+      "forceDraftRelease": true
     },
     "directories": {
       "buildResources": "assets",

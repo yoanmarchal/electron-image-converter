@@ -41,11 +41,23 @@ jobs:
         run: |
           npm ci
 
+      - name: Get version from tag
+        id: get_version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Update version in package.json
+        run: |
+          jq ".version = \"${{ steps.get_version.outputs.version }}\"" package.json > temp.json
+          mv temp.json package.json
+        shell: bash
+
       - name: Build Windows
         if: matrix.os == 'windows-latest'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EP_PRE_RELEASE: true
         run: npm run build:windows
 
       - name: Build Linux
@@ -53,33 +65,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EP_PRE_RELEASE: true
         run: npm run build:linux
 
       - name: Publish Windows
         if: matrix.os == 'windows-latest'
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 20
-          max_attempts: 3
-          retry_wait_seconds: 60
-          shell: bash
-          command: |
-            export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-            export GH_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-            npm run publish:windows
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EP_PRE_RELEASE: true
+        run: npm run publish:windows
 
       - name: Publish Linux
         if: matrix.os == 'ubuntu-latest'
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 20
-          max_attempts: 3
-          retry_wait_seconds: 60
-          shell: bash
-          command: |
-            export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-            export GH_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-            npm run publish:linux
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EP_PRE_RELEASE: true
+        run: npm run publish:linux
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
