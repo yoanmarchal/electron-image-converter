@@ -2,7 +2,7 @@
   "name": "image-converter",
   "private": true,
   "type": "module",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Convert images app",
   "main": "electron/main.js",
   "scripts": {
@@ -13,8 +13,11 @@
     "icons": "node scripts/generate-icons.js",
     "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
     "electron:build": "npm run icons && npm run build && electron-builder",
-    "release:windows": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --win --x64 --publish always",
-    "release:linux": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --linux --x64 --publish always",
+    "build:windows": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --win --x64",
+    "build:linux": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --linux --x64",
+    "publish:github": "cross-env DEBUG=electron-builder electron-builder --publish always",
+    "release:windows": "npm run build:windows && npm run publish:github",
+    "release:linux": "npm run build:linux && npm run publish:github",
     "release": "npm run release:windows"
   },
   "repository": {
@@ -135,7 +138,14 @@
         "repo": "electron-image-converter",
         "releaseType": "draft",
         "vPrefixedTagName": true,
-        "private": true
+        "private": true,
+        "timeout": 1200000,
+        "requestOptions": {
+          "timeout": 1200000,
+          "headers": {
+            "Connection": "keep-alive"
+          }
+        }
       }
     ],
     "directories": {

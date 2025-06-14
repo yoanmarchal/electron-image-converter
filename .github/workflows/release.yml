@@ -41,19 +41,24 @@ jobs:
         run: |
           npm ci
 
-      - name: Build and Publish Windows
+      - name: Build Windows
         if: matrix.os == 'windows-latest'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run release:windows
+        run: npm run build:windows
 
-      - name: Build and Publish Linux
+      - name: Build Linux
         if: matrix.os == 'ubuntu-latest'
+        run: npm run build:linux
+
+      - name: Publish to GitHub (with retry)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run release:linux
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 20
+          max_attempts: 3
+          retry_wait_seconds: 60
+          command: npm run publish:github
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
