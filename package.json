@@ -13,10 +13,10 @@
     "icons": "node scripts/generate-icons.js",
     "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
     "electron:build": "npm run icons && npm run build && electron-builder",
-    "build:windows": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --win --x64",
-    "build:linux": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --linux --x64",
-    "release:windows": "cross-env DEBUG=electron-builder electron-builder --win --x64 --publish always",
-    "release:linux": "cross-env DEBUG=electron-builder electron-builder --linux --x64 --publish always",
+    "build:windows": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --win --x64 --publish never",
+    "build:linux": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --linux --x64 --publish never",
+    "publish:windows": "cross-env DEBUG=electron-builder electron-builder --win --x64 --publish always --config.publish.provider=github --config.publish.owner=yoanmarchal --config.publish.repo=electron-image-converter",
+    "publish:linux": "cross-env DEBUG=electron-builder electron-builder --linux --x64 --publish always --config.publish.provider=github --config.publish.owner=yoanmarchal --config.publish.repo=electron-image-converter",
     "release": "npm run release:windows"
   },
   "repository": {
