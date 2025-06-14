@@ -13,8 +13,10 @@
     "icons": "node scripts/generate-icons.js",
     "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
     "electron:build": "npm run icons && npm run build && electron-builder",
-    "release:windows": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --win --x64 --publish always",
-    "release:linux": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --linux --x64 --publish always",
+    "build:windows": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --win --x64",
+    "build:linux": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --linux --x64",
+    "release:windows": "npm run build:windows -- --publish always",
+    "release:linux": "npm run build:linux -- --publish always",
     "release": "npm run release:windows"
   },
   "repository": {
@@ -128,23 +130,12 @@
       "electron/**/*",
       "!**/*.map"
     ],
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "yoanmarchal",
-        "repo": "electron-image-converter",
-        "releaseType": "draft",
-        "vPrefixedTagName": true,
-        "private": true,
-        "timeout": 1200000,
-        "requestOptions": {
-          "timeout": 1200000,
-          "headers": {
-            "Connection": "keep-alive"
-          }
-        }
-      }
-    ],
+    "publish": {
+      "provider": "github",
+      "owner": "yoanmarchal",
+      "repo": "electron-image-converter",
+      "releaseType": "draft"
+    },
     "directories": {
       "buildResources": "assets",
       "output": "release"
