@@ -2,7 +2,7 @@
   "name": "image-converter",
   "private": true,
   "type": "module",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Convert images app",
   "main": "electron/main.js",
   "scripts": {
