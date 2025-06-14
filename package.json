@@ -68,15 +68,6 @@
     "productName": "Image Converter",
     "asar": true,
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-    "mac": {
-      "category": "public.app-category.graphics-design",
-      "target": [
-        "dmg",
-        "zip"
-      ],
-      "darkModeSupport": true,
-      "hardenedRuntime": true
-    },
     "win": {
       "target": [
         "nsis",
