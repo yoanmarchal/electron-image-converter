@@ -51,6 +51,7 @@
     "concurrently": "^8.2.2",
     "electron": "^28.2.3",
     "electron-builder": "^24.9.1",
+    "electron-builder-notarize": "^1.5.2",
     "eslint": "^9.9.1",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.11",
@@ -63,28 +64,54 @@
     "vite-plugin-electron-renderer": "^0.14.5"
   },
   "build": {
-    "appId": "com.image.converter",
+    "appId": "com.yoanmarchal.imageconverter",
     "productName": "Image Converter",
+    "asar": true,
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "mac": {
       "category": "public.app-category.graphics-design",
-      "target": "dmg"
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "darkModeSupport": true,
+      "hardenedRuntime": true
     },
     "win": {
-      "target": "nsis"
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "public/logo.svg"
     },
     "linux": {
-      "target": "AppImage"
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Graphics",
+      "icon": "public/logo.svg"
     },
     "files": [
       "dist/**/*",
-      "electron/**/*"
+      "electron/**/*",
+      "!**/*.map"
     ],
     "publish": {
-      "provider": "github"
+      "provider": "github",
+      "releaseType": "release",
+      "private": false
     },
     "directories": {
       "buildResources": "assets",
       "output": "release"
+    },
+    "afterSign": "electron-builder-notarize",
+    "protocols": {
+      "name": "Image Converter",
+      "schemes": [
+        "imageconverter"
+      ]
     }
   },
   "type": "module"
