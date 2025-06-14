@@ -15,8 +15,8 @@
     "electron:build": "npm run icons && npm run build && electron-builder",
     "build:windows": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --win --x64",
     "build:linux": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --linux --x64",
-    "release:windows": "npm run build:windows -- --publish always",
-    "release:linux": "npm run build:linux -- --publish always",
+    "release:windows": "cross-env DEBUG=electron-builder electron-builder --win --x64 --publish always",
+    "release:linux": "cross-env DEBUG=electron-builder electron-builder --linux --x64 --publish always",
     "release": "npm run release:windows"
   },
   "repository": {
