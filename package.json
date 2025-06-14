@@ -14,9 +14,8 @@
     "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
     "electron:build": "npm run icons && npm run build && electron-builder",
     "build:windows": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --win --x64 --publish never",
-    "build:linux": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --linux --x64 --publish never",
-    "publish:windows": "cross-env DEBUG=electron-builder electron-builder --win --x64 --publish always --config.publish.provider=github --config.publish.owner=yoanmarchal --config.publish.repo=electron-image-converter",
-    "publish:linux": "cross-env DEBUG=electron-builder electron-builder --linux --x64 --publish always --config.publish.provider=github --config.publish.owner=yoanmarchal --config.publish.repo=electron-image-converter",
+    "build:linux": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --linux --x64 --publish never",    "publish:windows": "cross-env DEBUG=electron-builder electron-builder --win --x64 --publish always",
+    "publish:linux": "cross-env DEBUG=electron-builder electron-builder --linux --x64 --publish always",
     "release": "npm run release:windows"
   },
   "repository": {
@@ -129,12 +128,17 @@
       "dist/**/*",
       "electron/**/*",
       "!**/*.map"
-    ],
-    "publish": {
+    ],    "publish": {
       "provider": "github",
       "owner": "yoanmarchal",
       "repo": "electron-image-converter",
-      "releaseType": "draft"
+      "releaseType": "draft",
+      "private": false,
+      "verifyAuthentication": false,
+      "vPrefixedTagName": true,
+      "releasesDraft": true,
+      "timeout": 30000,
+      "retryCount": 3
     },
     "directories": {
       "buildResources": "assets",
