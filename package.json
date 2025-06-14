@@ -11,8 +11,7 @@
     "preview": "vite preview",
     "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
     "electron:build": "npm run build && electron-builder",
-    "electron:publish": "electron-builder --publish always",
-    "release": "npm run build && npm run electron:publish"
+    "release": "npm run build && electron-builder --publish always"
   },
   "repository": {
     "type": "git",
@@ -89,13 +88,12 @@
       "electron/**/*",
       "!**/*.map"
     ],
-    "publish": {
+    "publish": [{
       "provider": "github",
-      "releaseType": "release",
-      "private": false,
-      "releaseNotes": "Automatic release from CI",
-      "publishAutoUpdate": true
-    },
+      "owner": "yoanmarchal",
+      "repo": "electron-image-converter",
+      "releaseType": "draft"
+    }],
     "directories": {
       "buildResources": "assets",
       "output": "release"
