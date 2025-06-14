@@ -17,7 +17,13 @@
     "type": "git",
     "url": "https://github.com/yoanmarchal/electron-image-converter.git"
   },
-  "author": "Yoan Marchal",
+  "author": {
+    "name": "Yoan Marchal",
+    "email": "marchalyoan@gmail.com"
+  },
+  "contributors": [
+    "Yoan Marchal <BxkM6@example.com>"
+  ],
   "license": "MIT",
   "keywords": [
     "electron",
@@ -80,7 +86,12 @@
         "deb"
       ],
       "category": "Graphics",
-      "icon": "public/logo.svg"
+      "icon": "public/logo.svg",
+      "maintainer": "Yoan Marchal <marchalyoan@gmail.com>",
+      "vendor": "Yoan Marchal",
+      "synopsis": "Convert and optimize images easily",
+      "description": "A simple and efficient image converter supporting multiple formats including WebP, AVIF, JPEG, and PNG.",
+      "depends": ["libglib2.0-0", "libnss3", "libatk1.0-0", "libatk-bridge2.0-0", "libgdk-pixbuf2.0-0", "libgtk-3-0", "libxss1"]
     },
     "files": [
       "dist/**/*",
