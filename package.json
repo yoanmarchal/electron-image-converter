@@ -2,7 +2,7 @@
   "name": "image-converter",
   "private": true,
   "type": "module",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Convert images app",
   "main": "electron/main.js",
   "scripts": {
@@ -13,10 +13,7 @@
     "icons": "node scripts/generate-icons.js",
     "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
     "electron:build": "npm run icons && npm run build && electron-builder",
-    "build:windows": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --win --x64 --publish never",
-    "build:linux": "cross-env DEBUG=electron-builder npm run icons && npm run build && electron-builder --linux --x64 --publish never",    "publish:windows": "cross-env DEBUG=electron-builder electron-builder --win --x64 --publish always",
-    "publish:linux": "cross-env DEBUG=electron-builder electron-builder --linux --x64 --publish always",
-    "release": "npm run release:windows"
+    "release": "npm run build && cross-env electron-builder --publish always"
   },
   "repository": {
     "type": "git",
@@ -79,20 +76,8 @@
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "win": {
       "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "portable",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
-      "icon": "assets/icons/256x256.png"
+        "nsis"
+      ]
     },
     "linux": {
       "target": [
@@ -128,17 +113,11 @@
       "dist/**/*",
       "electron/**/*",
       "!**/*.map"
-    ],    "publish": {
+    ],    
+    "publish": {
       "provider": "github",
       "owner": "yoanmarchal",
-      "repo": "electron-image-converter",
-      "releaseType": "draft",
-      "private": false,
-      "verifyAuthentication": false,
-      "vPrefixedTagName": true,
-      "releasesDraft": true,
-      "timeout": 30000,
-      "retryCount": 3
+      "repo": "electron-image-converter"
     },
     "directories": {
       "buildResources": "assets",

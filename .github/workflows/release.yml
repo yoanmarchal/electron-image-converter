@@ -1,145 +1,27 @@
 name: Build and Release
 
-on:
-  push:
-    tags:
-      - "v*.*.*"
+on: push
 
 jobs:
-  create-release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    outputs:
-      release_id: ${{ steps.create-release.outputs.id }}
-      upload_url: ${{ steps.create-release.outputs.upload_url }}
-
-    permissions:
-      contents: write
-
-    steps:
-      - name: Create Release
-        id: create-release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: true
-          prerelease: false
-
-  build:
-    needs: create-release
-    permissions:
-      contents: write
-      packages: read
-
+  release:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
-      fail-fast: false
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v3
 
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: 20
-          cache: npm
-
-      - name: Setup Linux dependencies
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo dpkg --add-architecture i386
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libglib2.0-dev libnss3 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libxss1
-          sudo apt-get install -y --no-install-recommends wine64 wine32
-          sudo apt-get install -y --no-install-recommends mono-devel ca-certificates-mono
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Get version from tag
-        id: get_version
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Update version in package.json
-        run: |
-          jq ".version = \"${{ steps.get_version.outputs.version }}\"" package.json > temp.json
-          mv temp.json package.json
-        shell: bash
-
-      - name: Build Windows
-        if: matrix.os == 'windows-latest'
+      - name: Build and release
         env:
-          EP_GH_RETRIES: 3
-          EP_GH_TIMEOUT: 30000
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EP_GH_IGNORE_TIME: "true"
-          EP_RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
-          EP_PRE_RELEASE: true
-        run: npm run build:windows
-
-      - name: Build Linux
-        if: matrix.os == 'ubuntu-latest'
-        env:
-          EP_GH_RETRIES: 3
-          EP_GH_TIMEOUT: 30000
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EP_GH_IGNORE_TIME: "true"
-          EP_RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
-          EP_PRE_RELEASE: true
-        run: npm run build:linux
-
-      - name: Verify Windows build
-        if: matrix.os == 'windows-latest'
-        run: |
-          if [ ! -d "release" ]; then
-            echo "Release directory not found"
-            exit 1
-          fi
-          
-      - name: Publish Windows
-        if: matrix.os == 'windows-latest'
-        env:
-          EP_GH_RETRIES: 3
-          EP_GH_TIMEOUT: 30000
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EP_GH_IGNORE_TIME: "true"
-          EP_RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
-          EP_PRE_RELEASE: true
-        run: npm run publish:windows
-
-      - name: Verify Linux build
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          if [ ! -d "release" ]; then
-            echo "Release directory not found"
-            exit 1
-          fi
-          
-      - name: Publish Linux
-        if: matrix.os == 'ubuntu-latest'
-        env:
-          EP_GH_RETRIES: 3
-          EP_GH_TIMEOUT: 30000
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EP_GH_IGNORE_TIME: "true"
-          EP_RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
-          EP_PRE_RELEASE: true
-        run: npm run publish:linux
-
-      - name: Clean up
-        run: |
-          rm -rf release/*-unpacked/ release/.icon-ico/
-        shell: bash
+        run: npm run release
