@@ -77,7 +77,8 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "publisherName": "Yoan Marchal"
     },
     "linux": {
       "target": [

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Info, Loader } from 'lucide-react';
+import pkg from '../../package.json';
 
 interface StatusBarProps {
   imageCount: number;
@@ -24,12 +25,15 @@ const StatusBar: React.FC<StatusBarProps> = ({
         </span>
       </div>
       
-      {isConverting && (
-        <div className="flex items-center">
-          <Loader className="h-3 w-3 mr-2 animate-spin" />
-          <span>Converting images...</span>
-        </div>
-      )}
+      <div className="flex items-center space-x-4">
+        {isConverting && (
+          <div className="flex items-center">
+            <Loader className="h-3 w-3 mr-2 animate-spin" />
+            <span>Converting images...</span>
+          </div>
+        )}
+        <span>v{pkg.version}</span>
+      </div>
     </div>
   );
 };
