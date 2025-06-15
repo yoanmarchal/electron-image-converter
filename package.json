@@ -76,7 +76,7 @@
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "win": {
       "target": [
-        "nsis"
+        "nsis-web"
       ],
       "publisherName": "Yoan Marchal"
     },
