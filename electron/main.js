@@ -14,11 +14,13 @@ import log from 'electron-log';
 log.transports.file.level = 'info';
 log.info('Application starting...');
 
-const { updateElectronApp } = await import('update-electron-app');
+const { updateElectronApp, UpdateSourceType } = await import('update-electron-app');
 updateElectronApp({
   logger: log,
-  repo: 'yoanmarchal/electron-image-converter',
-  updateInterval: '1 hour',
+  updateSource: {
+    type: UpdateSourceType.ElectronPublicUpdateService,
+    repo: 'yoanmarchal/electron-image-converter'
+  },
   notifyUser: true
 });
 
