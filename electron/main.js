@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog, protocol, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, protocol, shell, autoUpdater } from 'electron';
 import { join, basename, extname, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import isDev from 'electron-is-dev';
@@ -7,6 +7,19 @@ import Store from 'electron-store';
 import { promises } from 'fs';
 import sharp from 'sharp';
 
+if (isDev) {
+	console.log('Running in development');
+} else {
+	console.log('Running in production');
+  const server = 'https://update.electronjs.org'
+  const feed = `${server}/yoanmarchal/electron-image-converter/${process.platform}-${process.arch}/${app.getVersion()}`
+
+  autoUpdater.setFeedURL(feed)
+
+  setInterval(() => {
+    autoUpdater.checkForUpdates()
+  }, 10 * 60 * 1000)
+}
 // Configurer la mise à jour automatique et la journalisation
 import log from 'electron-log';
 
