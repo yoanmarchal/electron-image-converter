@@ -16,6 +16,9 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
     rollupOptions: {
+      external: [
+        "sharp"
+      ],
       input: {
         app: resolve(__dirname, 'index.html'),
         preload: resolve(__dirname, 'electron/preload.js'),
