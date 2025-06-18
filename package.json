@@ -2,7 +2,7 @@
   "name": "image-converter",
   "private": true,
   "type": "module",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Convert images app",
   "main": "electron/main.js",
   "scripts": {
@@ -107,13 +107,7 @@
       "maintainer": "Yoan Marchal <marchalyoan@gmail.com>",
       "vendor": "Yoan Marchal",
       "synopsis": "Convert and optimize images easily",
-      "description": "A simple and efficient image converter supporting multiple formats including WebP, AVIF, JPEG, and PNG.",
-      "desktop": {
-        "Name": "Image Converter",
-        "Comment": "Convert and optimize images easily",
-        "Categories": "Graphics;2DGraphics;RasterGraphics;",
-        "MimeType": "image/jpeg;image/png;image/webp;image/avif"
-      }
+      "description": "A simple and efficient image converter supporting multiple formats including WebP, AVIF, JPEG, and PNG." 
     },
     "files": [
       "dist/**/*",
