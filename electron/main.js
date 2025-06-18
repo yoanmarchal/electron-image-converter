@@ -16,14 +16,6 @@ log.transports.file.level = 'info';
 log.info('Application starting...');
 
 const { updateElectronApp, UpdateSourceType } = await import('update-electron-app');
-updateElectronApp({
-  logger: log,
-  updateSource: {
-    type: UpdateSourceType.GithubReleases,
-    repo: 'yoanmarchal/electron-image-converter'
-  },
-  notifyUser: true
-});
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -87,6 +79,16 @@ const registerProtocols = () => {
 app.whenReady().then(() => {
   registerProtocols();
   createWindow();
+
+  updateElectronApp({
+    logger: log,
+    updateSource: {
+      type: UpdateSourceType.GithubReleases,
+      repo: 'yoanmarchal/electron-image-converter'
+    },
+    notifyUser: true
+  });
+
 });
 
 app.on('window-all-closed', () => {
