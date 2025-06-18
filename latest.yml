@@ -1,0 +1,8 @@
+version: 1.0.19
+files:
+  - url: Image-Converter-1.0.19-win-x64.exe
+    sha512: 69Uz/CjGWrH111pNyi1L8i4x7mS0c7at+6qPagJvlHLkPfCj8k0j03SypW+BX6IoKbwlKAnrwSlx6ed7gL87cA==
+    size: 157364784
+path: Image-Converter-1.0.19-win-x64.exe
+sha512: 69Uz/CjGWrH111pNyi1L8i4x7mS0c7at+6qPagJvlHLkPfCj8k0j03SypW+BX6IoKbwlKAnrwSlx6ed7gL87cA==
+releaseDate: '2025-06-18T19:54:05.534Z'
