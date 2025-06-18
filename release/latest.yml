@@ -1,8 +1,8 @@
 version: 1.0.21
 files:
   - url: Image-Converter-1.0.21-win-x64.exe
-    sha512: RoV4clk4HzUzzj7O1sOHw9hrutgHkMK6HFeYKNeyDySf59AuF+h4oACtlrlNJDgW21zkJLFfhE9jYHu9NQ7RNw==
-    size: 157349306
+    sha512: J4bBlpRw0JZle6nzl3QhGajHAgvAHpMykCrbXPP5Mvz/uCPEJhz4HscJkZUV7dk1pMwdorMhlHA9mHAIJroGgA==
+    size: 157349263
 path: Image-Converter-1.0.21-win-x64.exe
-sha512: RoV4clk4HzUzzj7O1sOHw9hrutgHkMK6HFeYKNeyDySf59AuF+h4oACtlrlNJDgW21zkJLFfhE9jYHu9NQ7RNw==
-releaseDate: '2025-06-18T20:34:01.465Z'
+sha512: J4bBlpRw0JZle6nzl3QhGajHAgvAHpMykCrbXPP5Mvz/uCPEJhz4HscJkZUV7dk1pMwdorMhlHA9mHAIJroGgA==
+releaseDate: '2025-06-18T20:50:44.763Z'
