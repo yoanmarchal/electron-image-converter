@@ -19,7 +19,7 @@ const { updateElectronApp, UpdateSourceType } = await import('update-electron-ap
 updateElectronApp({
   logger: log,
   updateSource: {
-    type: UpdateSourceType.ElectronPublicUpdateService,
+    type: UpdateSourceType.GithubReleases,
     repo: 'yoanmarchal/electron-image-converter'
   },
   notifyUser: true
