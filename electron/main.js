@@ -83,7 +83,7 @@ app.whenReady().then(() => {
   updateElectronApp({
     logger: log,
     updateSource: {
-      type: UpdateSourceType.GithubReleases,
+      type: UpdateSourceType.ElectronPublicUpdateService,
       repo: 'yoanmarchal/electron-image-converter'
     },
     notifyUser: true
@@ -273,3 +273,4 @@ ipcMain.handle('handle-dropped-file', async (_, { buffer, name }) => {
     throw error;
   }
 });
+
