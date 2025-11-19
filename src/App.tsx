@@ -6,18 +6,17 @@ import ImageList from './components/ImageList';
 import ConversionHistory from './components/ConversionHistory';
 import StatusBar from './components/StatusBar';
 
-// Declare the electron window object
-declare global {
-  interface Window {
-    electron: {
-      ipcRenderer: {
-        invoke(channel: string, ...args: any[]): Promise<any>;
-      };
-    };
-  }
+// Define TypeScript interfaces
+export interface ConversionResult {
+  success: boolean;
+  originalPath: string;
+  originalSize: number;
+  newSize: number;
+  compressionRatio: string;
+  outputPath: string;
+  error?: string;
 }
 
-// Define TypeScript interfaces
 export interface ImageFile {
   id: string;
   name: string;
@@ -63,7 +62,7 @@ function App() {
   useEffect(() => {
     async function loadConversionHistory() {
       try {
-        const history = await window.electron.ipcRenderer.invoke('get-conversion-history');
+        const history = await window.electron.ipcRenderer.invoke<HistoryItem[]>('get-conversion-history');
         setConversionHistory(history || []);
       } catch (error) {
         console.error('Failed to load conversion history:', error);
@@ -91,7 +90,7 @@ function App() {
 
   const handleSelectOutputDir = async () => {
     try {
-      const dir = await window.electron.ipcRenderer.invoke('select-output-dir');
+      const dir = await window.electron.ipcRenderer.invoke<string>('select-output-dir');
       if (dir) {
         setSettings(prev => ({ ...prev, outputDir: dir }));
       }
@@ -121,7 +120,7 @@ function App() {
       );
 
       try {
-        const result = await window.electron.ipcRenderer.invoke('convert-image', {
+        const result = await window.electron.ipcRenderer.invoke<ConversionResult>('convert-image', {
           filePath: image.path,
           outputDir: settings.outputDir,
           quality: settings.quality,

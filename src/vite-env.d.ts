@@ -3,7 +3,7 @@
 interface Window {
   electron: {
     ipcRenderer: {
-      invoke(channel: string, ...args: any[]): Promise<any>;
+      invoke<T = unknown>(channel: string, ...args: unknown[]): Promise<T>;
     }
   }
 }
