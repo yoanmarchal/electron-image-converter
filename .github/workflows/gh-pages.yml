@@ -44,9 +44,11 @@ jobs:
         uses: actions/configure-pages@v5
       
       - name: Install Node.js dependencies
+        working-directory: ./hugo-site
         run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
       
       - name: Build with Hugo
+        working-directory: ./hugo-site
         env:
           HUGO_CACHEDIR: ${{ runner.temp }}/hugo_cache
           HUGO_ENVIRONMENT: production
@@ -60,7 +62,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public
+          path: ./hugo-site/public
 
   deploy:
     environment:
