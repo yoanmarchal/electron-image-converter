@@ -1,0 +1,224 @@
+{{ define "main" }}
+
+<!-- Hero Section -->
+<section class="min-h-screen flex items-center justify-center px-4 py-20">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center animate-fade-in">
+            <!-- Logo or Icon -->
+            <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-primary-500 to-indigo-600 rounded-3xl shadow-2xl mb-8 animate-float">
+                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+            </div>
+
+            <h1 class="text-6xl md:text-7xl font-bold mb-6 animate-slide-up">
+                <span class="gradient-text">Image Converter</span>
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-slate-600 mb-4 max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s;">
+                Convertissez vos images facilement en un clic
+            </p>
+            
+            <p class="text-lg text-slate-500 mb-12 max-w-2xl mx-auto animate-slide-up" style="animation-delay: 0.2s;">
+                Une application moderne et performante pour convertir vos images en WebP, JPEG, PNG ou AVIF
+            </p>
+
+            <!-- Download Buttons -->
+            <div id="downloads" class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 animate-slide-up" style="animation-delay: 0.3s;">
+                <a href="https://github.com/yoanmarchal/electron-image-converter/releases/latest/download/Image-Converter-Setup-1.0.28.exe" 
+                   class="btn-primary group">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M5 4v16h14V4H5zm12 14H7V6h10v12zm-7-5h4v-2h-4V9l-3 3 3 3v-2z" transform="rotate(90 12 12)"/>
+                    </svg>
+                    Télécharger pour Windows
+                </a>
+                
+                <a href="https://github.com/yoanmarchal/electron-image-converter/releases/latest/download/image-converter_1.0.28_amd64.deb" 
+                   class="btn-secondary group">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M22.14,11.08C21.93,10.86 21.66,10.73 21.37,10.73H19.82L19.82,8.55C19.82,7.38 18.86,6.43 17.69,6.43H6.31C5.14,6.43 4.18,7.38 4.18,8.55V10.73H2.63C2.34,10.73 2.07,10.86 1.86,11.08C1.65,11.29 1.53,11.57 1.53,11.86V13.14C1.53,13.43 1.65,13.71 1.86,13.92C2.07,14.14 2.34,14.27 2.63,14.27H4.18V17.45C4.18,18.62 5.14,19.57 6.31,19.57H17.69C18.86,19.57 19.82,18.62 19.82,17.45V14.27H21.37C21.66,14.27 21.93,14.14 22.14,13.92C22.35,13.71 22.47,13.43 22.47,13.14V11.86C22.47,11.57 22.35,11.29 22.14,11.08Z"/>
+                    </svg>
+                    Télécharger pour Linux
+                </a>
+            </div>
+
+            <div class="flex items-center justify-center gap-6 text-sm text-slate-500 animate-slide-up" style="animation-delay: 0.4s;">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>Gratuit & Open Source</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>Pas de collecte de données</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-20 px-4" id="features">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                <span class="gradient-text">Fonctionnalités puissantes</span>
+            </h2>
+            <p class="text-xl text-slate-600">Tout ce dont vous avez besoin pour convertir vos images</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="feature-card">
+                <div class="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-slate-800">Multi-formats</h3>
+                <p class="text-slate-600">Convertissez vos images en WebP, JPEG, PNG ou AVIF selon vos besoins</p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="feature-card">
+                <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-slate-800">Glisser-déposer</h3>
+                <p class="text-slate-600">Interface intuitive avec support du drag & drop pour une utilisation rapide</p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="feature-card">
+                <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-slate-800">Contrôle qualité</h3>
+                <p class="text-slate-600">Ajustez la qualité de compression de 0 à 100% selon vos préférences</p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="feature-card">
+                <div class="w-14 h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-slate-800">Traitement rapide</h3>
+                <p class="text-slate-600">Conversions ultra-rapides grâce à Sharp, le moteur de traitement d'images performant</p>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="feature-card">
+                <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-slate-800">Historique</h3>
+                <p class="text-slate-600">Suivez toutes vos conversions avec des statistiques détaillées et un accès rapide</p>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="feature-card">
+                <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-slate-800">Mises à jour auto</h3>
+                <p class="text-slate-600">Recevez automatiquement les dernières fonctionnalités et améliorations</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tech Stack Section -->
+<section class="py-20 px-4 bg-white/50">
+    <div class="max-w-7xl mx-auto text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-12">
+            <span class="gradient-text">Technologies modernes</span>
+        </h2>
+        <div class="flex flex-wrap justify-center items-center gap-12">
+            <div class="flex flex-col items-center gap-2">
+                <div class="text-4xl">⚛️</div>
+                <span class="text-slate-600 font-medium">React</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <div class="text-4xl">⚡</div>
+                <span class="text-slate-600 font-medium">Electron</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <div class="text-4xl">🎨</div>
+                <span class="text-slate-600 font-medium">Tailwind CSS</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <div class="text-4xl">📘</div>
+                <span class="text-slate-600 font-medium">TypeScript</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <div class="text-4xl">🖼️</div>
+                <span class="text-slate-600 font-medium">Sharp</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 px-4">
+    <div class="max-w-4xl mx-auto text-center">
+        <div class="bg-gradient-to-br from-primary-600 to-indigo-600 rounded-3xl shadow-2xl p-12 md:p-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+                Prêt à convertir vos images ?
+            </h2>
+            <p class="text-xl text-blue-100 mb-8">
+                Téléchargez Image Converter gratuitement et commencez dès maintenant
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#downloads" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary-600 font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Télécharger maintenant
+                </a>
+                <a href="{{ .Site.Params.github }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent text-white font-semibold rounded-xl border-2 border-white/30 hover:bg-white/10 transform hover:-translate-y-0.5 transition-all duration-200">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>
+                    </svg>
+                    Voir sur GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-12 px-4 bg-slate-900 text-white">
+    <div class="max-w-7xl mx-auto text-center">
+        <div class="mb-6">
+            <h3 class="text-2xl font-bold mb-2">Image Converter</h3>
+            <p class="text-slate-400">Convertissez vos images facilement</p>
+        </div>
+        <div class="flex justify-center gap-6 mb-6">
+            <a href="{{ .Site.Params.github }}" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>
+                </svg>
+            </a>
+        </div>
+        <div class="text-slate-400 text-sm">
+            <p>&copy; {{ now.Year }} {{ .Site.Params.author }}. Tous droits réservés.</p>
+            <p class="mt-2">Créé avec ❤️ et Hugo</p>
+        </div>
+    </div>
+</footer>
+
+{{ end }}

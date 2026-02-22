@@ -1,0 +1,12 @@
+name = "Custom Landing Page"
+license = "MIT"
+licenselink = "https://github.com/yoanmarchal/electron-image-converter/blob/main/LICENSE"
+description = "A modern landing page theme with Tailwind CSS for Image Converter"
+homepage = "https://github.com/yoanmarchal/electron-image-converter"
+tags = ["landing-page", "tailwind", "modern", "responsive"]
+features = ["responsive", "tailwindcss", "custom"]
+min_version = "0.140.0"
+
+[author]
+  name = "Yoan Marchal"
+  email = "marchalyoan@gmail.com"

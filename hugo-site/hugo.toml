@@ -1,0 +1,14 @@
+baseURL = "https://yoanmarchal.github.io/electron-image-converter/"
+languageCode = "fr-FR"
+title = "Image Converter - Convertissez vos images facilement"
+theme = "custom"
+
+[params]
+  description = "Une application de bureau moderne pour la conversion d'images multi-formats. Convertissez facilement vos images en WebP, JPEG, PNG ou AVIF."
+  author = "Yoan Marchal"
+  github = "https://github.com/yoanmarchal/electron-image-converter"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
