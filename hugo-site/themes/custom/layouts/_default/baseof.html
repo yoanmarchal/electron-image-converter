@@ -51,5 +51,9 @@
             });
         });
     </script>
+    
+    <!-- Script pour mettre à jour les liens de téléchargement dynamiquement -->
+    {{ $js := resources.Get "js/github-releases.js" | minify | fingerprint }}
+    <script src="{{ $js.Permalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 </body>
 </html>

@@ -33,31 +33,36 @@
         
         // Trouver les assets Windows et Linux
         const windowsAsset = release.assets.find(asset => 
-            asset.name.endsWith('.exe') && asset.name.includes('Setup')
+            asset.name.toLowerCase().endsWith('.exe') && 
+            asset.name.toLowerCase().includes('setup')
         );
         
         const linuxAsset = release.assets.find(asset => 
-            asset.name.endsWith('.deb') && asset.name.includes('amd64')
+            asset.name.endsWith('.deb') && 
+            asset.name.includes('amd64')
         );
 
         // Mettre à jour les liens Windows
         if (windowsAsset) {
-            const windowsLinks = document.querySelectorAll('a[href*="Setup"][href$=".exe"]');
+            const windowsLinks = document.querySelectorAll('a[data-download="windows"]');
             windowsLinks.forEach(link => {
                 link.href = windowsAsset.browser_download_url;
                 link.setAttribute('data-version', version);
+                // Ajouter un badge de version si souhaité
+                link.setAttribute('title', `Télécharger v${version} pour Windows`);
             });
-            console.log(`✅ Windows download link updated to version ${version}`);
+            console.log(`✅ Windows download link updated to version ${version}: ${windowsAsset.name}`);
         }
 
         // Mettre à jour les liens Linux
         if (linuxAsset) {
-            const linuxLinks = document.querySelectorAll('a[href*=".deb"]');
+            const linuxLinks = document.querySelectorAll('a[data-download="linux"]');
             linuxLinks.forEach(link => {
                 link.href = linuxAsset.browser_download_url;
                 link.setAttribute('data-version', version);
+                link.setAttribute('title', `Télécharger v${version} pour Linux`);
             });
-            console.log(`✅ Linux download link updated to version ${version}`);
+            console.log(`✅ Linux download link updated to version ${version}: ${linuxAsset.name}`);
         }
 
         // Mettre à jour les badges de version si présents
