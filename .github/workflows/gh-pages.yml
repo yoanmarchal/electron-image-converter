@@ -39,13 +39,18 @@ jobs:
           submodules: recursive
           fetch-depth: 0
       
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
       
       - name: Install Node.js dependencies
         working-directory: ./hugo-site
-        run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
+        run: npm install
       
       - name: Build with Hugo
         working-directory: ./hugo-site
