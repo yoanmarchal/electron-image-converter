@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 /**
  * Formats a file size in bytes to a human-readable string
  */
@@ -17,7 +15,7 @@ export function formatFileSize(bytes: number): string {
  * Generates a unique ID
  */
 export function generateId(): string {
-  return uuidv4();
+  return crypto.randomUUID();
 }
 
 /**

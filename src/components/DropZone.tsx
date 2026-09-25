@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone, DropEvent } from 'react-dropzone';
 import { ImageDown, Upload } from 'lucide-react';
-import { v4 as uuidv4 } from 'uuid';
 import { ImageFile } from '../App';
 
 interface DropZoneProps {
@@ -65,7 +64,7 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
 
             if (info) {
               return {
-                id: uuidv4(),
+                id: crypto.randomUUID(),
                 name: file.name,
                 path: filePath,
                 size: info.size,
@@ -102,7 +101,7 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
           
           if (info) {
             imageFiles.push({
-              id: uuidv4(),
+              id: crypto.randomUUID(),
               name: file.path.split('/').pop() || file.path.split('\\').pop() || 'unknown',
               path: file.path,
               size: info.size,

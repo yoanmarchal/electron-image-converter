@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
-        node-version: [20.x]
+        node-version: [24.x]
 
     steps:
     - name: Checkout repository
@@ -26,7 +26,7 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: npm install
+      run: npm ci
 
     - name: Run Lint
       run: npm run lint
