@@ -4,7 +4,6 @@ import { fileURLToPath } from 'url';
 import isDev from 'electron-is-dev';
 import { statSync } from 'fs';
 import Store from 'electron-store';
-import { promises } from 'fs';
 import sharp from 'sharp';
 
 
@@ -259,18 +258,6 @@ ipcMain.handle('open-file', async (_, filePath) => {
   } catch (error) {
     console.error('Error opening file:', error);
     return false;
-  }
-});
-
-ipcMain.handle('handle-dropped-file', async (_, { buffer, name }) => {
-  try {
-    const tempPath = join(app.getPath('temp'), `webp-converter-${Date.now()}-${name}`);
-    const fileBuffer = Buffer.from(buffer);
-    await promises.writeFile(tempPath, fileBuffer);
-    return tempPath;
-  } catch (error) {
-    console.error('Error handling dropped file:', error);
-    throw error;
   }
 });
 

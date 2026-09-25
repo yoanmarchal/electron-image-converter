@@ -69,7 +69,7 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
             <span className="text-xs text-gray-500 mr-2">Basse</span>
             <input
               type="range"
-              min="0"
+              min="1"
               max="100"
               value={settings.quality}
               onChange={handleQualityChange}

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone, DropEvent } from 'react-dropzone';
 import { ImageDown, Upload } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { ImageFile } from '../App';
@@ -15,6 +15,32 @@ interface SelectedFile {
   previewUrl: string;
 }
 
+interface ImageInfo {
+  format: string;
+  width: number;
+  height: number;
+  size: number;
+}
+
+/**
+ * Renvoie les File natifs de l'événement. Par défaut, react-dropzone (file-selector) passe par
+ * getAsFileSystemHandle().getFile(), dont les File n'ont pas de chemin sur le disque :
+ * webUtils.getPathForFile renverrait alors une chaîne vide.
+ */
+async function getNativeFilesFromEvent(event: DropEvent): Promise<Array<File | DataTransferItem>> {
+  if (Array.isArray(event)) return [];
+
+  if ('dataTransfer' in event && event.dataTransfer) {
+    // Pendant le survol, les fichiers ne sont pas encore lisibles : seuls les items servent à valider le type
+    return event.type === 'drop'
+      ? Array.from(event.dataTransfer.files)
+      : Array.from(event.dataTransfer.items).filter(item => item.kind === 'file');
+  }
+
+  const input = event.target as HTMLInputElement | null;
+  return input?.files ? Array.from(input.files) : [];
+}
+
 const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, className = '' }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -28,24 +54,22 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
       const processedFiles = await Promise.all(
         acceptedFiles.map(async (file) => {
           try {
-            const preview = URL.createObjectURL(file);
-            const arrayBuffer = await file.arrayBuffer();
-            const uint8Array = new Uint8Array(arrayBuffer);
-            
-            const tempPath = await window.electron.ipcRenderer.invoke('handle-dropped-file', {
-              buffer: Array.from(uint8Array),
-              name: file.name
-            });
+            // Utiliser le chemin d'origine pour que la sortie soit écrite à côté du fichier source
+            const filePath = window.electron.getPathForFile(file);
+            if (!filePath) {
+              console.error('Dropped file has no path on disk:', file.name);
+              return null;
+            }
 
-            const info = await window.electron.ipcRenderer.invoke('get-image-info', tempPath);
-            
+            const info = await window.electron.ipcRenderer.invoke<ImageInfo | null>('get-image-info', filePath);
+
             if (info) {
               return {
                 id: uuidv4(),
                 name: file.name,
-                path: tempPath,
+                path: filePath,
                 size: info.size,
-                preview: preview,
+                preview: URL.createObjectURL(file),
                 status: 'pending',
               };
             }
@@ -74,7 +98,7 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
         const imageFiles: ImageFile[] = [];
         
         for (const file of selectedFiles) {
-          const info = await window.electron.ipcRenderer.invoke('get-image-info', file.path);
+          const info = await window.electron.ipcRenderer.invoke<ImageInfo | null>('get-image-info', file.path);
           
           if (info) {
             imageFiles.push({
@@ -101,6 +125,9 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
       'image/*': ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff']
     },
     disabled: isConverting,
+    getFilesFromEvent: getNativeFilesFromEvent,
+    // Utiliser l'<input type="file"> natif au clic plutôt que showOpenFilePicker (File sans chemin)
+    useFsAccessApi: false,
   });
 
   // Update isDragging state based on isDragActive

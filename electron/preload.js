@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
@@ -8,14 +8,12 @@ contextBridge.exposeInMainWorld('electron', {
       const validChannels = [
         'select-files',
         'select-output-dir',
-        'get-last-output-dir',
         'get-image-info',
         'convert-image',
         'save-conversion-history',
         'get-conversion-history',
         'clear-conversion-history',
         'open-file',
-        'handle-dropped-file'
       ];
       if (validChannels.includes(channel)) {
         return ipcRenderer.invoke(channel, ...args);
@@ -23,4 +21,6 @@ contextBridge.exposeInMainWorld('electron', {
       return Promise.reject(new Error(`Channel "${channel}" is not allowed`));
     },
   },
+  // Chemin réel sur le disque d'un fichier glissé-déposé (File.path n'existe plus depuis Electron 32)
+  getPathForFile: (file) => webUtils.getPathForFile(file),
 });
