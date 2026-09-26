@@ -36,9 +36,11 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
               </span>
             </div>
             
-            <nav className="ml-10 flex space-x-4">
+            <nav className="ml-10 flex space-x-4" aria-label="Navigation principale">
               <button
+                type="button"
                 onClick={() => onTabChange('convert')}
+                aria-current={activeTab === 'convert' ? 'page' : undefined}
                 className={classNames(
                   'px-3 py-2 rounded-md text-sm font-medium transition-colors',
                   activeTab === 'convert'
@@ -48,12 +50,14 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
               >
                 <div className="flex items-center">
                   <ImageDown className="h-4 w-4 mr-1" />
-                  Convert
+                  Convertir
                 </div>
               </button>
-              
+
               <button
+                type="button"
                 onClick={() => onTabChange('history')}
+                aria-current={activeTab === 'history' ? 'page' : undefined}
                 className={classNames(
                   'px-3 py-2 rounded-md text-sm font-medium transition-colors',
                   activeTab === 'history'
@@ -63,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
               >
                 <div className="flex items-center">
                   <History className="h-4 w-4 mr-1" />
-                  History
+                  Historique
                 </div>
               </button>
             </nav>
@@ -71,7 +75,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
           
           <div className="flex items-center">
             <button
+              type="button"
               onClick={toggleDarkMode}
+              title={isDarkMode ? 'Passer en mode clair' : 'Passer en mode sombre'}
+              aria-label={isDarkMode ? 'Passer en mode clair' : 'Passer en mode sombre'}
               className="p-2 rounded-full text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors"
             >
               {isDarkMode ? (

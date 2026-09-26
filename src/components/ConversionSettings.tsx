@@ -37,23 +37,22 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold flex items-center text-gray-900 dark:text-white">
-          <Sliders className="h-5 w-5 mr-2 text-teal-600" />
+          <Sliders className="h-5 w-5 mr-2 text-teal-600" aria-hidden="true" />
           Paramètres de conversion
         </h2>
       </div>
       
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="output-format" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Format de sortie
           </label>
           <select
+            id="output-format"
             value={settings.format}
             onChange={(e) => onSettingsChange({ format: e.target.value as Settings['format'] })}
             className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             disabled={isConverting}
-            title="Format de sortie"
-            aria-label="Format de sortie"
           >
             {FORMAT_OPTIONS.map(option => (
               <option key={option.value} value={option.value}>
@@ -64,12 +63,13 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Qualité: {settings.quality}%
+          <label htmlFor="output-quality" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Qualité : {settings.quality} %
           </label>
           <div className="flex items-center">
             <span className="text-xs text-gray-500 mr-2">Basse</span>
             <input
+              id="output-quality"
               type="range"
               min="1"
               max="100"
@@ -77,13 +77,12 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
               onChange={handleQualityChange}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-teal-600 dark:bg-gray-700"
               disabled={isConverting || isLossless}
-              title="Qualité de l'image"
-              aria-label="Qualité de l'image"
+              aria-describedby="output-quality-hint"
               name="quality"
             />
             <span className="text-xs text-gray-500 ml-2">Haute</span>
           </div>
-          <div className="text-xs text-gray-500 mt-1">
+          <div id="output-quality-hint" className="text-xs text-gray-500 mt-1">
             {isLossless ? 'Le PNG est sans perte : la qualité ne s\'applique pas' :
              settings.quality < 30 ? 'Qualité basse, fichier plus petit' :
              settings.quality < 70 ? 'Qualité équilibrée' : 

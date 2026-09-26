@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trash2, FileX, FileCheck, RefreshCw, ExternalLink } from 'lucide-react';
 import { ImageFile } from '../App';
-import { formatFileSize } from '../utils/fileUtils';
+import { formatFileSize, formatPercent } from '../utils/fileUtils';
 
 interface ImageListProps {
   images: ImageFile[];
@@ -23,8 +23,8 @@ const ImageList: React.FC<ImageListProps> = ({
   if (images.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
-        <FileX className="h-12 w-12 mb-2 opacity-40" />
-        <p>No images added yet</p>
+        <FileX className="h-12 w-12 mb-2 opacity-40" aria-hidden="true" />
+        <p>Aucune image ajoutée</p>
       </div>
     );
   }
@@ -38,11 +38,12 @@ const ImageList: React.FC<ImageListProps> = ({
         
         {images.length > 0 && (
           <button
+            type="button"
             onClick={onRemoveAllImages}
             className="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors flex items-center"
           >
-            <Trash2 className="h-3 w-3 mr-1" />
-            Clear all
+            <Trash2 className="h-3 w-3 mr-1" aria-hidden="true" />
+            Tout retirer
           </button>
         )}
       </div>
@@ -70,24 +71,25 @@ const ImageList: React.FC<ImageListProps> = ({
                   
                   <div className="flex items-center space-x-1">
                     {image.status === 'converting' && (
-                      <RefreshCw className="h-4 w-4 text-yellow-500 animate-spin" />
+                      <RefreshCw className="h-4 w-4 text-yellow-500 animate-spin" role="img" aria-label="Conversion en cours" />
                     )}
                     
                     {image.status === 'converted' && (
-                      <FileCheck className="h-4 w-4 text-green-500" />
+                      <FileCheck className="h-4 w-4 text-green-500" role="img" aria-label="Convertie" />
                     )}
                     
                     {image.status === 'error' && (
-                      <FileX className="h-4 w-4 text-red-500" />
+                      <FileX className="h-4 w-4 text-red-500" role="img" aria-label="Erreur" />
                     )}
                     
                     <button
+                      type="button"
                       onClick={() => onRemoveImage(image.id)}
                       className="text-gray-400 hover:text-red-500 transition-colors"
-                      title="Remove image"
-                      aria-label="Remove image"
+                      title={`Retirer ${image.name}`}
+                      aria-label={`Retirer ${image.name}`}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4" aria-hidden="true" />
                     </button>
                   </div>
                 </div>
@@ -99,16 +101,17 @@ const ImageList: React.FC<ImageListProps> = ({
                     <>
                       <span className="mr-3">→ {formatFileSize(image.newSize || 0)}</span>
                       <span className="text-green-600 dark:text-green-400">
-                        Saved {image.compressionRatio}%
+                        Gain : {formatPercent(image.compressionRatio ?? '0')}
                       </span>
                       
                       {image.outputPath && (
-                        <button 
+                        <button
+                          type="button"
                           onClick={() => openFile(image.outputPath as string)}
                           className="ml-2 text-teal-600 hover:text-teal-800 dark:text-teal-400 flex items-center"
                         >
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          Open
+                          <ExternalLink className="h-3 w-3 mr-1" aria-hidden="true" />
+                          Ouvrir
                         </button>
                       )}
                     </>
@@ -116,7 +119,7 @@ const ImageList: React.FC<ImageListProps> = ({
                   
                   {image.status === 'error' && (
                     <span className="text-red-600 dark:text-red-400">
-                      {image.error || 'Conversion failed'}
+                      {image.error || 'Échec de la conversion'}
                     </span>
                   )}
                 </div>

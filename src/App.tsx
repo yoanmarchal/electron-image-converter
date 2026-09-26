@@ -76,11 +76,20 @@ function App() {
     setImages(prev => [...prev, ...files]);
   };
 
+  // Les aperçus des fichiers déposés sont des URL blob: qui gardent l'image en mémoire
+  const revokePreview = (image: ImageFile) => {
+    if (image.preview.startsWith('blob:')) {
+      URL.revokeObjectURL(image.preview);
+    }
+  };
+
   const handleRemoveImage = (id: string) => {
+    images.filter(img => img.id === id).forEach(revokePreview);
     setImages(prev => prev.filter(img => img.id !== id));
   };
 
   const handleRemoveAllImages = () => {
+    images.forEach(revokePreview);
     setImages([]);
   };
 
@@ -188,7 +197,7 @@ function App() {
         setImages(prev =>
           prev.map(img =>
             img.id === image.id
-              ? { ...img, status: 'error', error: 'Unknown error occurred' }
+              ? { ...img, status: 'error', error: 'Erreur inattendue pendant la conversion' }
               : img
           )
         );
@@ -199,7 +208,7 @@ function App() {
   };
 
   const handleClearHistory = async () => {
-    if (confirm('Are you sure you want to clear the conversion history?')) {
+    if (confirm("Vider tout l'historique des conversions ?")) {
       await window.electron.ipcRenderer.invoke('clear-conversion-history');
       setConversionHistory([]);
     }

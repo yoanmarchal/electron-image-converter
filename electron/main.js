@@ -1,11 +1,16 @@
 import { app, BrowserWindow, ipcMain, dialog, protocol, shell, net } from 'electron';
-import { join, basename, extname, dirname, resolve, isAbsolute } from 'path';
+import { join, dirname, resolve, isAbsolute } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import isDev from 'electron-is-dev';
-import { statSync } from 'fs';
-import { access, stat } from 'fs/promises';
 import Store from 'electron-store';
 import sharp from 'sharp';
+import {
+  INPUT_EXTENSIONS,
+  OUTPUT_FORMATS,
+  getExtension,
+  assertImageFile,
+  convertImage,
+} from './imageConversion.js';
 import squirrelStartup from 'electron-squirrel-startup';
 
 
@@ -28,10 +33,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const DEV_SERVER_URL = 'http://localhost:5173';
 const INDEX_HTML = join(__dirname, '../dist/index.html');
-
-// Formats lisibles par sharp (le BMP ne l'est pas sans ImageMagick)
-const INPUT_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'tif', 'tiff', 'webp', 'avif'];
-const OUTPUT_FORMATS = ['webp', 'jpg', 'png', 'avif'];
 
 // Le protocole doit être déclaré avant l'événement ready
 protocol.registerSchemesAsPrivileged([
@@ -64,44 +65,6 @@ function isAppUrl(url) {
     return parsed.protocol === 'file:' && samePath(fileURLToPath(parsed), INDEX_HTML);
   } catch {
     return false;
-  }
-}
-
-function getExtension(filePath) {
-  return extname(filePath).slice(1).toLowerCase();
-}
-
-async function assertImageFile(filePath) {
-  if (typeof filePath !== 'string' || !isAbsolute(filePath)) {
-    throw new Error('Le chemin du fichier source est invalide ou manquant');
-  }
-  if (!INPUT_EXTENSIONS.includes(getExtension(filePath))) {
-    throw new Error(`Extension non supportée : ${extname(filePath) || '(aucune)'}`);
-  }
-  const fileStat = await stat(filePath);
-  if (!fileStat.isFile()) {
-    throw new Error(`Le chemin ne désigne pas un fichier : ${filePath}`);
-  }
-  return fileStat;
-}
-
-async function fileExists(filePath) {
-  try {
-    await access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-// Ne jamais écraser un fichier existant (ni l'original) : photo.webp, puis photo-1.webp, photo-2.webp…
-async function getAvailableOutputPath(dir, name, extension) {
-  for (let index = 0; ; index++) {
-    const suffix = index === 0 ? '' : `-${index}`;
-    const candidate = join(dir, `${name}${suffix}.${extension}`);
-    if (!(await fileExists(candidate))) {
-      return candidate;
-    }
   }
 }
 
@@ -274,7 +237,6 @@ handle('get-image-info', async (filePath) => {
 handle('convert-image', async ({ filePath, outputDir, quality, format = 'webp' } = {}) => {
   try {
     // Validation des paramètres d'entrée
-    await assertImageFile(filePath);
     if (!quality || typeof quality !== 'number' || quality < 1 || quality > 100) {
       throw new Error('La qualité doit être un nombre entre 1 et 100');
     }
@@ -285,74 +247,22 @@ handle('convert-image', async ({ filePath, outputDir, quality, format = 'webp' }
       throw new Error('Le dossier de sortie doit être choisi via le sélecteur de dossier');
     }
 
-    console.log(`Début de la conversion : ${filePath}`);
+    console.log(`Début de la conversion : ${filePath} (qualité=${quality}, format=${format}, dossier=${outputDir || "dossier d'origine"})`);
 
-    // Toujours utiliser le dossier d'origine si aucun dossier de sortie n'est spécifié
-    const effectiveOutputDir = outputDir || dirname(filePath);
-    console.log(`Paramètres : qualité=${quality}, format=${format}, dossier de sortie=${effectiveOutputDir}`);
+    const result = await convertImage({ filePath, outputDir, quality, format });
 
-    const filename = basename(filePath, extname(filePath));
-    const outputPath = await getAvailableOutputPath(effectiveOutputDir, filename, format);
-
-    console.log(`Chemin de sortie : ${outputPath}`);
-
-    // Seul le WebP conserve l'animation d'un GIF ; les autres formats gardent la première image
-    const keepAnimation = format === 'webp' && getExtension(filePath) === 'gif';
-
-    // Les métadonnées EXIF ne sont pas copiées : appliquer l'orientation aux pixels
-    // pour que les photos prises en portrait ne ressortent pas couchées
-    let sharpInstance = sharp(filePath, { animated: keepAnimation }).autoOrient();
-
-    switch (format) {
-      case 'webp':
-        sharpInstance = sharpInstance.webp({ quality });
-        break;
-      case 'jpg':
-        // Le JPEG n'a pas de transparence : fond blanc plutôt que noir
-        sharpInstance = sharpInstance.flatten({ background: '#ffffff' }).jpeg({ quality });
-        break;
-      case 'png':
-        // PNG sans perte : la qualité ne s'applique pas, on compresse au maximum
-        sharpInstance = sharpInstance.png({ compressionLevel: 9 });
-        break;
-      case 'avif':
-        sharpInstance = sharpInstance.avif({ quality });
-        break;
-    }
-
-    await sharpInstance.toFile(outputPath);
-
-    // Vérifier si le fichier de sortie existe et a une taille
-    const outputExists = statSync(outputPath);
-    if (!outputExists || outputExists.size === 0) {
-      throw new Error('Le fichier de sortie est vide ou n\'existe pas');
-    }
-
-    const originalSize = statSync(filePath).size;
-    const newSize = outputExists.size;
-
-    console.log(`Conversion réussie : ${outputPath}`);
-    console.log(`Taille originale : ${originalSize}, Nouvelle taille : ${newSize}`);
+    console.log(`Conversion réussie : ${result.outputPath} (${result.originalSize} → ${result.newSize} octets)`);
 
     return {
       success: true,
       originalPath: filePath,
-      outputPath,
-      originalSize,
-      newSize,
-      compressionRatio: ((1 - (newSize / originalSize)) * 100).toFixed(2),
+      ...result,
     };
   } catch (error) {
     console.error('Erreur détaillée de conversion :', error);
-    console.error('Stack trace :', error.stack);
-    let errorMessage = error.message;
-
-    // Vérifier si le fichier source existe
-    try {
-      statSync(filePath);
-    } catch (e) {
-      errorMessage = `Le fichier source n'existe pas : ${filePath}`;
-    }
+    const errorMessage = error.code === 'ENOENT' && error.path === filePath
+      ? `Le fichier source n'existe pas : ${filePath}`
+      : error.message;
 
     return {
       success: false,

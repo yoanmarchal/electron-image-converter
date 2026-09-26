@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone, DropEvent } from 'react-dropzone';
 import { ImageDown, Upload } from 'lucide-react';
 import { ImageFile } from '../App';
+import { getFilenameFromPath } from '../utils/fileUtils';
 
 interface DropZoneProps {
   onFilesSelected: (files: ImageFile[]) => void;
@@ -102,7 +103,7 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
           if (info) {
             imageFiles.push({
               id: crypto.randomUUID(),
-              name: file.path.split('/').pop() || file.path.split('\\').pop() || 'unknown',
+              name: getFilenameFromPath(file.path),
               path: file.path,
               size: info.size,
               preview: file.previewUrl,
@@ -150,22 +151,22 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
       }`}>
         {isProcessing ? (
           <div className="animate-spin">
-            <Upload className="h-10 w-10 text-teal-600 dark:text-teal-400" />
+            <Upload className="h-10 w-10 text-teal-600 dark:text-teal-400" aria-hidden="true" />
           </div>
         ) : (
           <Upload className={`h-10 w-10 text-teal-600 dark:text-teal-400 transition-transform duration-300 ${
             isDragging ? 'rotate-12' : ''
-          }`} />
+          }`} aria-hidden="true" />
         )}
       </div>
       
       <div className="text-center px-4">
         <p className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-          {isProcessing ? 'Processing images...' :
-           isDragging ? 'Drop images here' : 'Drag and drop images here'}
+          {isProcessing ? 'Chargement des images…' :
+           isDragging ? 'Déposez les images ici' : 'Glissez-déposez vos images ici'}
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-          Or click to select files
+          ou cliquez pour choisir des fichiers (JPEG, PNG, GIF, TIFF, WebP, AVIF)
         </p>
         
         <button
@@ -177,8 +178,8 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
           className="btn btn-primary"
           disabled={isConverting}
         >
-          <ImageDown className="h-4 w-4 mr-2 inline" />
-          Select Images
+          <ImageDown className="h-4 w-4 mr-2 inline" aria-hidden="true" />
+          Choisir des images
         </button>
       </div>
     </div>

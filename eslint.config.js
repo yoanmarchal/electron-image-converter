@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'release'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
@@ -24,5 +24,26 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
     },
-  }
+  },
+  // Processus principal Electron et scripts Node (ES modules)
+  {
+    extends: [js.configs.recommended],
+    files: ['electron/**/*.js', 'scripts/**/*.js'],
+    ignores: ['electron/preload.js'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: globals.node,
+    },
+  },
+  // Le preload tourne en sandbox : CommonJS avec require()
+  {
+    extends: [js.configs.recommended],
+    files: ['electron/preload.js'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'commonjs',
+      globals: globals.node,
+    },
+  },
 );

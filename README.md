@@ -7,10 +7,11 @@ Une application de bureau moderne et efficace pour la conversion d'images, const
 ## Fonctionnalités
 
 - 🖼️ **Conversion d'images multi-formats**
-  - WebP (Meilleur rapport qualité/taille)
-  - JPEG (Compatible partout)
-  - PNG (Sans perte avec transparence)
-  - AVIF (Format moderne haute performance)
+  - Formats de sortie : WebP (meilleur rapport qualité/taille), JPEG (compatible partout), PNG (sans perte, avec transparence), AVIF (format moderne haute performance)
+  - Formats d'entrée : JPEG, PNG, GIF, TIFF, WebP, AVIF
+  - Orientation EXIF appliquée : les photos prises en portrait restent en portrait
+  - GIF animés conservés en WebP animé
+  - Transparence remplacée par un fond blanc en JPEG
 
 - 🎯 **Interface utilisateur intuitive**
   - Glisser-déposer des images
@@ -20,18 +21,19 @@ Une application de bureau moderne et efficace pour la conversion d'images, const
   - Interface responsive
 
 - ⚙️ **Options de conversion avancées**
-  - Contrôle de la qualité (0-100%)
-  - Choix du dossier de sortie
-  - Conservation de la structure des dossiers
+  - Contrôle de la qualité (1 à 100 %, sauf PNG qui est sans perte)
+  - Fichiers convertis à côté des originaux, ou dans un dossier de sortie au choix
+  - Aucun fichier écrasé : si `photo.webp` existe déjà, la sortie devient `photo-1.webp`
 
 - 📊 **Historique des conversions**
   - Suivi des conversions effectuées
   - Statistiques de compression
   - Accès rapide aux fichiers convertis
 
-- 🔄 **Mises à jour automatiques**
+- 🔄 **Mises à jour automatiques** (Windows)
   - Système de mise à jour intégré
   - Notifications de nouvelles versions
+  - Sous Linux, installez la nouvelle version depuis les [releases GitHub](https://github.com/yoanmarchal/electron-image-converter/releases)
 
 ## Technologies utilisées
 
@@ -44,13 +46,17 @@ Une application de bureau moderne et efficace pour la conversion d'images, const
 
 ## Installation
 
+Prérequis : Node.js 22.12 ou plus récent (requis par Electron 44).
+
 ```bash
 # Cloner le repository
 git clone https://github.com/yoanmarchal/electron-image-converter.git
 
-# Installer les dépendances
-npm install
+# Installer les dépendances (versions exactes du package-lock.json)
+npm ci
 ```
+
+Le binaire d'Electron est téléchargé au premier lancement de `npm run electron:dev`.
 
 ## Commandes disponibles
 
@@ -60,7 +66,8 @@ npm install
 - `npm run electron:build` - Compile l'application Electron pour la distribution
 - `npm run release` - Crée une nouvelle release de l'application
 - `npm run icons` - Génère les icônes de l'application
-- `npm run lint` - Vérifie le code avec ESLint
+- `npm run lint` - Vérifie le code avec ESLint (renderer et processus principal)
+- `npm test` - Lance les tests (Vitest), dont les tests de conversion avec sharp
 
 ## Configuration système requise
 
