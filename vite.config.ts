@@ -9,6 +9,12 @@ export default defineConfig({
     react(),
     electron()
   ],
+  server: {
+    watch: {
+      // Le watcher garde un handle sur chaque dossier : sous Windows, il bloque le renommage de release/win-unpacked.tmp par electron-builder
+      ignored: ['**/release/**'],
+    },
+  },
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
