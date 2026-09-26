@@ -26,6 +26,8 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
   isConverting,
   imageCount,
 }) => {
+  const isLossless = settings.format === 'png';
+
   const handleQualityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const quality = parseInt(e.target.value, 10);
     onSettingsChange({ quality });
@@ -74,7 +76,7 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
               value={settings.quality}
               onChange={handleQualityChange}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-teal-600 dark:bg-gray-700"
-              disabled={isConverting}
+              disabled={isConverting || isLossless}
               title="Qualité de l'image"
               aria-label="Qualité de l'image"
               name="quality"
@@ -82,7 +84,8 @@ const ConversionSettings: React.FC<ConversionSettingsProps> = ({
             <span className="text-xs text-gray-500 ml-2">Haute</span>
           </div>
           <div className="text-xs text-gray-500 mt-1">
-            {settings.quality < 30 ? 'Qualité basse, fichier plus petit' : 
+            {isLossless ? 'Le PNG est sans perte : la qualité ne s\'applique pas' :
+             settings.quality < 30 ? 'Qualité basse, fichier plus petit' :
              settings.quality < 70 ? 'Qualité équilibrée' : 
              'Haute qualité, fichier plus grand'}
           </div>

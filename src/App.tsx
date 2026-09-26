@@ -84,8 +84,22 @@ function App() {
     setImages([]);
   };
 
+  // Après un changement de réglages, les images déjà traitées redeviennent à convertir
+  const resetProcessedImages = () => {
+    setImages(prev =>
+      prev.map(img => {
+        if (img.status !== 'converted' && img.status !== 'error') {
+          return img;
+        }
+        const { id, name, path, size, preview } = img;
+        return { id, name, path, size, preview, status: 'pending' };
+      })
+    );
+  };
+
   const handleSettingsChange = (newSettings: Partial<ConversionSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
+    resetProcessedImages();
   };
 
   const handleSelectOutputDir = async () => {
@@ -93,6 +107,7 @@ function App() {
       const dir = await window.electron.ipcRenderer.invoke<string>('select-output-dir');
       if (dir) {
         setSettings(prev => ({ ...prev, outputDir: dir }));
+        resetProcessedImages();
       }
     } catch (error) {
       console.error('Failed to select output directory:', error);

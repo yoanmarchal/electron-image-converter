@@ -121,7 +121,7 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff']
+      'image/*': ['.jpg', '.jpeg', '.png', '.gif', '.tif', '.tiff', '.webp', '.avif']
     },
     disabled: isConverting,
     getFilesFromEvent: getNativeFilesFromEvent,

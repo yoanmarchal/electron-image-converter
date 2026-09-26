@@ -3,7 +3,7 @@ import { join, basename, extname, dirname, resolve, isAbsolute } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import isDev from 'electron-is-dev';
 import { statSync } from 'fs';
-import { stat } from 'fs/promises';
+import { access, stat } from 'fs/promises';
 import Store from 'electron-store';
 import sharp from 'sharp';
 import squirrelStartup from 'electron-squirrel-startup';
@@ -29,7 +29,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const DEV_SERVER_URL = 'http://localhost:5173';
 const INDEX_HTML = join(__dirname, '../dist/index.html');
 
-const INPUT_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff'];
+// Formats lisibles par sharp (le BMP ne l'est pas sans ImageMagick)
+const INPUT_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'tif', 'tiff', 'webp', 'avif'];
 const OUTPUT_FORMATS = ['webp', 'jpg', 'png', 'avif'];
 
 // Le protocole doit être déclaré avant l'événement ready
@@ -82,6 +83,26 @@ async function assertImageFile(filePath) {
     throw new Error(`Le chemin ne désigne pas un fichier : ${filePath}`);
   }
   return fileStat;
+}
+
+async function fileExists(filePath) {
+  try {
+    await access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Ne jamais écraser un fichier existant (ni l'original) : photo.webp, puis photo-1.webp, photo-2.webp…
+async function getAvailableOutputPath(dir, name, extension) {
+  for (let index = 0; ; index++) {
+    const suffix = index === 0 ? '' : `-${index}`;
+    const candidate = join(dir, `${name}${suffix}.${extension}`);
+    if (!(await fileExists(candidate))) {
+      return candidate;
+    }
+  }
 }
 
 // N'accepte que les appels venant de la page de l'application, dans la fenêtre principale
@@ -271,26 +292,28 @@ handle('convert-image', async ({ filePath, outputDir, quality, format = 'webp' }
     console.log(`Paramètres : qualité=${quality}, format=${format}, dossier de sortie=${effectiveOutputDir}`);
 
     const filename = basename(filePath, extname(filePath));
-    const outputPath = join(effectiveOutputDir, `${filename}.${format}`);
+    const outputPath = await getAvailableOutputPath(effectiveOutputDir, filename, format);
 
     console.log(`Chemin de sortie : ${outputPath}`);
 
-    if (samePath(outputPath, filePath)) {
-      throw new Error('Le fichier de sortie remplacerait l\'original : choisissez un autre format ou un autre dossier de sortie');
-    }
+    // Seul le WebP conserve l'animation d'un GIF ; les autres formats gardent la première image
+    const keepAnimation = format === 'webp' && getExtension(filePath) === 'gif';
 
-    // Utiliser sharp pour la conversion selon le format choisi
-    let sharpInstance = sharp(filePath);
+    // Les métadonnées EXIF ne sont pas copiées : appliquer l'orientation aux pixels
+    // pour que les photos prises en portrait ne ressortent pas couchées
+    let sharpInstance = sharp(filePath, { animated: keepAnimation }).autoOrient();
 
     switch (format) {
       case 'webp':
         sharpInstance = sharpInstance.webp({ quality });
         break;
       case 'jpg':
-        sharpInstance = sharpInstance.jpeg({ quality });
+        // Le JPEG n'a pas de transparence : fond blanc plutôt que noir
+        sharpInstance = sharpInstance.flatten({ background: '#ffffff' }).jpeg({ quality });
         break;
       case 'png':
-        sharpInstance = sharpInstance.png({ quality });
+        // PNG sans perte : la qualité ne s'applique pas, on compresse au maximum
+        sharpInstance = sharpInstance.png({ compressionLevel: 9 });
         break;
       case 'avif':
         sharpInstance = sharpInstance.avif({ quality });
