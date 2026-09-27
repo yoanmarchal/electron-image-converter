@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, readdir, rm, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import sharp from 'sharp';
-import { assertImageFile, convertImage, getAvailableOutputPath } from './imageConversion.js';
+import { assertImageFile, convertImage, createThumbnail, getAvailableOutputPath } from './imageConversion.js';
 
 let dir;
 
@@ -143,5 +143,22 @@ describe('getAvailableOutputPath', () => {
     await writeFile(join(dir, 'photo-1.webp'), '');
 
     expect(await getAvailableOutputPath(dir, 'photo', 'webp')).toBe(join(dir, 'photo-2.webp'));
+  });
+});
+
+describe('createThumbnail', () => {
+  it.each(['photo.png', 'photo.tiff'])('renvoie une miniature WebP de 96 px pour %s', async (name) => {
+    const input = await createImage(name, { width: 300, height: 200 });
+
+    const thumbnail = await createThumbnail(input);
+
+    expect(thumbnail).toMatch(/^data:image\/webp;base64,/);
+    const buffer = Buffer.from(thumbnail.split(',')[1], 'base64');
+    const { format, width, height } = await sharp(buffer).metadata();
+    expect({ format, width, height }).toEqual({ format: 'webp', width: 96, height: 96 });
+  });
+
+  it('refuse une extension non lisible par sharp', async () => {
+    await expect(createThumbnail(join(dir, 'image.bmp'))).rejects.toThrow('Extension non supportée');
   });
 });

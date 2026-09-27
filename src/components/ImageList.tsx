@@ -55,7 +55,7 @@ const ImageList: React.FC<ImageListProps> = ({
               key={image.id}
               className="flex items-center p-2 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
             >
-              <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded overflow-hidden mr-3 flex-shrink-0">
+              <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-sm overflow-hidden mr-3 shrink-0">
                 <img 
                   src={image.preview} 
                   alt={image.name} 

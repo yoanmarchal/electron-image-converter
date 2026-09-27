@@ -76,20 +76,11 @@ function App() {
     setImages(prev => [...prev, ...files]);
   };
 
-  // Les aperçus des fichiers déposés sont des URL blob: qui gardent l'image en mémoire
-  const revokePreview = (image: ImageFile) => {
-    if (image.preview.startsWith('blob:')) {
-      URL.revokeObjectURL(image.preview);
-    }
-  };
-
   const handleRemoveImage = (id: string) => {
-    images.filter(img => img.id === id).forEach(revokePreview);
     setImages(prev => prev.filter(img => img.id !== id));
   };
 
   const handleRemoveAllImages = () => {
-    images.forEach(revokePreview);
     setImages([]);
   };
 
@@ -229,7 +220,7 @@ function App() {
                 <DropZone
                   onFilesSelected={handleFilesSelected}
                   isConverting={isConverting}
-                  className="flex-shrink-0"
+                  className="shrink-0"
                 />
 
                 <div className="mt-4 flex-1 min-h-0">

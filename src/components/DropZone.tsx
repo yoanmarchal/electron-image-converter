@@ -10,16 +10,12 @@ interface DropZoneProps {
   className?: string;
 }
 
-interface SelectedFile {
-  path: string;
-  previewUrl: string;
-}
-
 interface ImageInfo {
   format: string;
   width: number;
   height: number;
   size: number;
+  thumbnail: string;
 }
 
 /**
@@ -27,7 +23,7 @@ interface ImageInfo {
  * getAsFileSystemHandle().getFile(), dont les File n'ont pas de chemin sur le disque :
  * webUtils.getPathForFile renverrait alors une chaîne vide.
  */
-async function getNativeFilesFromEvent(event: DropEvent): Promise<Array<File | DataTransferItem>> {
+async function getNativeFilesFromEvent(event: DropEvent | FileSystemFileHandle[]): Promise<Array<File | DataTransferItem>> {
   if (Array.isArray(event)) return [];
 
   if ('dataTransfer' in event && event.dataTransfer) {
@@ -42,7 +38,6 @@ async function getNativeFilesFromEvent(event: DropEvent): Promise<Array<File | D
 }
 
 const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, className = '' }) => {
-  const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -69,7 +64,7 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
                 name: file.name,
                 path: filePath,
                 size: info.size,
-                preview: URL.createObjectURL(file),
+                preview: info.thumbnail,
                 status: 'pending',
               };
             }
@@ -92,21 +87,21 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
 
   const handleSelectFiles = async () => {
     try {
-      const selectedFiles = await window.electron.ipcRenderer.invoke('select-files') as SelectedFile[];
+      const selectedPaths = await window.electron.ipcRenderer.invoke<string[]>('select-files');
       
-      if (selectedFiles && selectedFiles.length > 0) {
+      if (selectedPaths && selectedPaths.length > 0) {
         const imageFiles: ImageFile[] = [];
         
-        for (const file of selectedFiles) {
-          const info = await window.electron.ipcRenderer.invoke<ImageInfo | null>('get-image-info', file.path);
+        for (const path of selectedPaths) {
+          const info = await window.electron.ipcRenderer.invoke<ImageInfo | null>('get-image-info', path);
           
           if (info) {
             imageFiles.push({
               id: crypto.randomUUID(),
-              name: getFilenameFromPath(file.path),
-              path: file.path,
+              name: getFilenameFromPath(path),
+              path,
               size: info.size,
-              preview: file.previewUrl,
+              preview: info.thumbnail,
               status: 'pending',
             });
           }
@@ -130,10 +125,7 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
     useFsAccessApi: false,
   });
 
-  // Update isDragging state based on isDragActive
-  React.useEffect(() => {
-    setIsDragging(isDragActive);
-  }, [isDragActive]);
+  const isDragging = isDragActive;
 
   return (
     <div 

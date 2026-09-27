@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { readFileSync } from 'fs';
 
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
@@ -11,7 +12,7 @@ const PRODUCTION_CSP = [
   "default-src 'self'",
   "script-src 'self'",
   "style-src 'self'",
-  "img-src 'self' blob: data: local-file:",
+  "img-src 'self' data:",
   "font-src 'self'",
   "connect-src 'self'",
   "object-src 'none'",
@@ -40,6 +41,7 @@ export default defineConfig({
   base: './',
   plugins: [
     react(),
+    tailwindcss(),
     productionContentSecurityPolicy(),
   ],
   define: {
