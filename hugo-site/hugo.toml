@@ -1,14 +1,17 @@
 baseURL = "https://yoanmarchal.github.io/electron-image-converter/"
 languageCode = "fr-FR"
-title = "Image Converter - Convertissez vos images facilement"
-theme = "custom"
+defaultContentLanguage = "fr"
+title = "Image Converter — Convertissez vos images en WebP, AVIF, JPEG ou PNG"
+disableKinds = ["taxonomy", "term", "rss", "sitemap", "section"]
 
 [params]
-  description = "Une application de bureau moderne pour la conversion d'images multi-formats. Convertissez facilement vos images en WebP, JPEG, PNG ou AVIF."
+  description = "Application de bureau gratuite et open source pour convertir vos images en WebP, AVIF, JPEG ou PNG. Glisser-déposer, contrôle de la qualité, 100 % hors ligne."
   author = "Yoan Marchal"
+  repo = "yoanmarchal/electron-image-converter"
   github = "https://github.com/yoanmarchal/electron-image-converter"
+  releases = "https://github.com/yoanmarchal/electron-image-converter/releases/latest"
+  # Version affichée tant que l'API GitHub n'a pas répondu (mise à jour côté client).
+  version = "1.1.0"
 
-[markup]
-  [markup.goldmark]
-    [markup.goldmark.renderer]
-      unsafe = true
+[markup.goldmark.renderer]
+  unsafe = true

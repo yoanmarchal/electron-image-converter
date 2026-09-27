@@ -1,0 +1,18 @@
+- q: Mes images sont-elles envoyées sur Internet ?
+  a: >-
+    Non. Toute la conversion se fait sur votre ordinateur grâce à sharp. Aucune image ne quitte votre machine et aucune donnée d'usage n'est collectée.
+- q: Mes fichiers originaux sont-ils modifiés ?
+  a: >-
+    Jamais. Les images converties sont créées à côté des originaux, ou dans le dossier de sortie de votre choix. Rien n'est écrasé non plus : si <code>photo.webp</code> existe déjà, la sortie devient <code>photo-1.webp</code>.
+- q: Quel format choisir ?
+  a: >-
+    <strong>WebP</strong> pour le web, c'est le meilleur compromis. <strong>AVIF</strong> pour les fichiers les plus légers. <strong>JPEG</strong> si l'image doit s'ouvrir partout. <strong>PNG</strong> pour une qualité sans perte avec transparence.
+- q: Quels formats puis-je importer ?
+  a: >-
+    JPEG, PNG, GIF, TIFF, WebP et AVIF. L'orientation EXIF est appliquée automatiquement et les GIF animés sont conservés en WebP animé.
+- q: Comment mettre à jour l'application ?
+  a: >-
+    Sous Windows, les mises à jour s'installent automatiquement. Sous Linux, téléchargez simplement la nouvelle version depuis cette page ou les releases GitHub.
+- q: Existe-t-il une version macOS ?
+  a: >-
+    Pas encore de version précompilée. Le code est open source sous licence MIT, vous pouvez lancer l'application depuis les sources en suivant le README.

@@ -1,0 +1,121 @@
+<section class="border-y border-zinc-200/70 bg-zinc-50/60 dark:border-zinc-800/70 dark:bg-zinc-900/30">
+  <dl class="container-page grid grid-cols-2 gap-y-8 py-10 text-center md:grid-cols-4">
+    {{ range slice (slice "4" "formats de sortie") (slice "6" "formats d'entrée") (slice "0" "image envoyée en ligne") (slice "MIT" "gratuit et open source") }}
+      <div data-reveal>
+        <dt class="sr-only">{{ index . 1 }}</dt>
+        <dd class="text-3xl font-semibold tracking-tight sm:text-4xl">{{ index . 0 }}</dd>
+        <dd class="mt-1 text-sm text-zinc-500">{{ index . 1 }}</dd>
+      </div>
+    {{ end }}
+  </dl>
+</section>
+
+<section id="fonctionnalites" class="py-24 sm:py-32">
+  <div class="container-page">
+    <div class="max-w-2xl" data-reveal>
+      <p class="eyebrow">Fonctionnalités</p>
+      <h2 class="section-title">Tout ce qu'il faut. Rien de superflu.</h2>
+      <p class="section-lead">Déposez vos images, choisissez un format, c'est converti. Les détails sont gérés pour vous.</p>
+    </div>
+
+    <div class="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+
+      {{/* Démo interactive du réglage de qualité */}}
+      <article data-reveal data-quality-demo class="card p-6 sm:p-8 md:col-span-2">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3 class="text-lg font-semibold">Une qualité sur mesure</h3>
+            <p class="mt-1 max-w-md text-zinc-600 dark:text-zinc-400">Choisissez le format et ajustez la compression de 1 à 100 %. Essayez :</p>
+          </div>
+          <span class="hidden rounded-2xl bg-brand-500/10 p-3 text-brand-600 sm:block dark:text-brand-400">{{ partial "icon.html" (dict "name" "sliders-horizontal" "class" "size-6") }}</span>
+        </div>
+
+        <div class="mt-8 rounded-2xl bg-white p-5 ring-1 ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800">
+          <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Format de sortie">
+            {{ range $i, $f := slice "WebP" "AVIF" "JPEG" "PNG" }}
+              <button type="button" role="radio" data-format="{{ lower $f }}" aria-checked="{{ if eq $i 0 }}true{{ else }}false{{ end }}"
+                class="rounded-full px-3.5 py-1.5 font-mono text-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 aria-checked:bg-zinc-900 aria-checked:text-white aria-checked:ring-zinc-900 dark:ring-zinc-800 dark:hover:bg-zinc-900 dark:aria-checked:bg-white dark:aria-checked:text-zinc-900 dark:aria-checked:ring-white">{{ $f }}</button>
+            {{ end }}
+          </div>
+          <label for="demo-quality" class="mt-6 flex items-baseline justify-between text-sm font-medium">
+            Qualité
+            <output data-quality-value for="demo-quality" class="font-mono text-2xl font-semibold tabular-nums">80 %</output>
+          </label>
+          <input id="demo-quality" type="range" min="1" max="100" value="80" class="range mt-3 disabled:cursor-not-allowed disabled:opacity-40" aria-describedby="demo-quality-hint">
+          <div class="mt-2 flex justify-between text-xs text-zinc-500"><span>Basse</span><span>Haute</span></div>
+          <p id="demo-quality-hint" data-quality-hint class="mt-4 flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400" aria-live="polite">
+            Haute qualité, fichier plus grand
+          </p>
+        </div>
+      </article>
+
+      <article data-reveal class="card flex flex-col p-6 sm:p-8">
+        <span class="w-fit rounded-2xl bg-emerald-500/10 p-3 text-emerald-600 dark:text-emerald-400">{{ partial "icon.html" (dict "name" "shield-check" "class" "size-6") }}</span>
+        <h3 class="mt-6 text-lg font-semibold">100 % sur votre machine</h3>
+        <p class="mt-2 text-zinc-600 dark:text-zinc-400">Aucun upload, aucun compte, aucune collecte de données. Vos images ne quittent jamais votre ordinateur.</p>
+        <div class="mt-auto flex items-center gap-2 pt-8 font-mono text-xs text-zinc-500">
+          {{ partial "icon.html" (dict "name" "lock" "class" "size-3.5") }} Fonctionne hors ligne
+        </div>
+      </article>
+
+      <article data-reveal class="card p-6 sm:p-8">
+        <span class="inline-block rounded-2xl bg-sky-500/10 p-3 text-sky-600 dark:text-sky-400">{{ partial "icon.html" (dict "name" "rotate-cw" "class" "size-6") }}</span>
+        <h3 class="mt-6 text-lg font-semibold">Orientation respectée</h3>
+        <p class="mt-2 text-zinc-600 dark:text-zinc-400">L'orientation EXIF est appliquée : une photo prise en portrait reste en portrait.</p>
+      </article>
+
+      <article data-reveal class="card p-6 sm:p-8">
+        <span class="inline-block rounded-2xl bg-violet-500/10 p-3 text-violet-600 dark:text-violet-400">{{ partial "icon.html" (dict "name" "film" "class" "size-6") }}</span>
+        <h3 class="mt-6 text-lg font-semibold">GIF animés conservés</h3>
+        <p class="mt-2 text-zinc-600 dark:text-zinc-400">Convertis en WebP animé, vos GIF gardent leur animation pour un poids bien plus faible.</p>
+      </article>
+
+      <article data-reveal class="card p-6 sm:p-8">
+        <span class="inline-block rounded-2xl bg-amber-500/10 p-3 text-amber-600 dark:text-amber-400">{{ partial "icon.html" (dict "name" "copy" "class" "size-6") }}</span>
+        <h3 class="mt-6 text-lg font-semibold">Rien n'est écrasé</h3>
+        <p class="mt-2 text-zinc-600 dark:text-zinc-400">Vos originaux restent intacts et les fichiers existants aussi.</p>
+        <p class="mt-4 rounded-lg bg-white px-3 py-2 font-mono text-xs ring-1 ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800">
+          photo.webp <span class="text-zinc-400">existe →</span> <span class="text-brand-600 dark:text-brand-400">photo-1.webp</span>
+        </p>
+      </article>
+
+      <article data-reveal class="card grid gap-8 p-6 sm:p-8 md:col-span-2 md:grid-cols-2">
+        <div>
+          <span class="inline-block rounded-2xl bg-rose-500/10 p-3 text-rose-600 dark:text-rose-400">{{ partial "icon.html" (dict "name" "history" "class" "size-6") }}</span>
+          <h3 class="mt-6 text-lg font-semibold">Historique et statistiques</h3>
+          <p class="mt-2 text-zinc-600 dark:text-zinc-400">Retrouvez chaque conversion, l'espace gagné et ouvrez les fichiers convertis en un clic.</p>
+        </div>
+        <ul class="space-y-2 self-center font-mono text-xs" aria-hidden="true">
+          {{ range slice (slice "vacances-plage.webp" "-81 %" "w-[81%]") (slice "portrait-studio.webp" "-84 %" "w-[84%]") (slice "capture-ecran.avif" "-67 %" "w-[67%]") }}
+            <li class="rounded-lg bg-white px-3 py-2.5 ring-1 ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800">
+              <div class="flex justify-between"><span class="truncate">{{ index . 0 }}</span><span class="text-emerald-600 dark:text-emerald-400">{{ index . 1 }}</span></div>
+              <div class="mt-2 h-1 rounded-full bg-zinc-100 dark:bg-zinc-800"><div class="h-full rounded-full bg-linear-to-r from-brand-400 to-emerald-400 {{ index . 2 }}"></div></div>
+            </li>
+          {{ end }}
+        </ul>
+      </article>
+
+      <article data-reveal class="card p-6 sm:p-8">
+        <span class="inline-block rounded-2xl bg-brand-500/10 p-3 text-brand-600 dark:text-brand-400">{{ partial "icon.html" (dict "name" "folder-open" "class" "size-6") }}</span>
+        <h3 class="mt-6 text-lg font-semibold">Là où vous voulez</h3>
+        <p class="mt-2 text-zinc-600 dark:text-zinc-400">À côté des originaux par défaut, ou dans le dossier de sortie de votre choix.</p>
+      </article>
+    </div>
+
+    <ul class="mt-4 grid gap-4 sm:grid-cols-3">
+      {{ range slice
+        (dict "icon" "zap" "title" "Propulsé par sharp" "text" "Le moteur de traitement d'images de référence.")
+        (dict "icon" "moon" "title" "Thème clair et sombre" "text" "Une interface soignée, de jour comme de nuit.")
+        (dict "icon" "refresh-cw" "title" "Mises à jour auto" "text" "Toujours à jour sous Windows, sans y penser.")
+      }}
+        <li data-reveal class="flex gap-4 rounded-3xl p-6 ring-1 ring-zinc-200/70 dark:ring-zinc-800">
+          <span class="text-zinc-400">{{ partial "icon.html" (dict "name" .icon "class" "size-5") }}</span>
+          <div>
+            <p class="font-medium">{{ .title }}</p>
+            <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{{ .text }}</p>
+          </div>
+        </li>
+      {{ end }}
+    </ul>
+  </div>
+</section>

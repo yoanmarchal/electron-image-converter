@@ -1,27 +1,135 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Même teinte que l'application (primary-500 = #0d9488) */
+  --color-brand-50: #effcf9;
+  --color-brand-100: #c8f5ec;
+  --color-brand-200: #93eadb;
+  --color-brand-300: #56d7c4;
+  --color-brand-400: #26bcaa;
+  --color-brand-500: #0d9488;
+  --color-brand-600: #0a7a70;
+  --color-brand-700: #0b615a;
+  --color-brand-800: #0e4e49;
+  --color-brand-900: #10413d;
+  --color-brand-950: #022624;
+
+  --animate-reveal: reveal 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-shine: shine 4s linear infinite;
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes shine {
+    to { background-position: 200% center; }
+  }
+}
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    color-scheme: light;
+  }
+  html.dark { color-scheme: dark; }
+
   body {
-    @apply bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50;
+    @apply bg-white font-sans text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
+  }
+
+  ::selection { @apply bg-brand-200 text-brand-950; }
+
+  :focus-visible { @apply outline-2 outline-offset-2 outline-brand-500; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
 @layer components {
+  .container-page { @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8; }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition duration-200 active:scale-[0.98];
+  }
+  .btn-lg { @apply px-6 py-3.5 text-base; }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-primary-700 hover:to-primary-600 transform hover:-translate-y-0.5 transition-all duration-200;
+    @apply bg-zinc-900 text-white shadow-lg shadow-zinc-900/10 hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:shadow-none dark:hover:bg-zinc-200;
   }
-  
-  .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary-600 font-semibold rounded-xl shadow-md hover:shadow-lg border-2 border-primary-200 hover:border-primary-300 transform hover:-translate-y-0.5 transition-all duration-200;
+  .btn-brand {
+    @apply bg-brand-500 text-white shadow-lg shadow-brand-500/25 hover:bg-brand-600;
   }
-
-  .feature-card {
-    @apply bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border border-slate-200/50;
+  .btn-ghost {
+    @apply text-zinc-700 ring-1 ring-zinc-200 ring-inset hover:bg-zinc-50 dark:text-zinc-200 dark:ring-zinc-800 dark:hover:bg-zinc-900;
   }
 
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent;
+  .eyebrow {
+    @apply font-mono text-xs font-medium tracking-widest text-brand-600 uppercase dark:text-brand-400;
   }
+  .section-title {
+    @apply mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl md:text-5xl;
+  }
+  .section-lead {
+    @apply mt-4 text-lg text-pretty text-zinc-600 dark:text-zinc-400;
+  }
+
+  .card {
+    @apply relative overflow-hidden rounded-3xl bg-zinc-50 ring-1 ring-zinc-200/70 dark:bg-zinc-900/60 dark:ring-zinc-800;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:text-zinc-300 dark:ring-zinc-800;
+  }
+
+  .text-gradient {
+    @apply bg-linear-to-r from-brand-500 via-teal-400 to-violet-500 bg-[length:200%_auto] bg-clip-text text-transparent;
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 56px 56px;
+    --grid-line: rgb(24 24 27 / 0.06);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 40%, transparent 100%);
+  }
+  .dark .bg-grid { --grid-line: rgb(255 255 255 / 0.06); }
+
+  /* Apparition au défilement : la classe .is-visible est posée par main.js */
+  /* Filet de sécurité : si main.js ne se charge pas, tout apparaît quand même après 2 s. */
+  .js [data-reveal] { animation: reveal 0.7s 2s both; }
+  .js [data-reveal].is-visible { @apply animate-reveal; }
+
+  /* Curseur de qualité du bloc démo */
+  .range {
+    @apply h-2 w-full cursor-pointer appearance-none rounded-full accent-brand-500;
+    --track: var(--color-zinc-200);
+    background: linear-gradient(to right, var(--color-brand-500) var(--fill, 80%), var(--track) var(--fill, 80%));
+  }
+  .dark .range { --track: var(--color-zinc-800); }
+  .range::-webkit-slider-thumb {
+    @apply size-5 appearance-none rounded-full border-4 border-white bg-brand-500 shadow-md dark:border-zinc-900;
+  }
+  .range::-moz-range-thumb {
+    @apply size-4 rounded-full border-4 border-white bg-brand-500 shadow-md dark:border-zinc-900;
+  }
+
+  details summary::-webkit-details-marker { display: none; }
+  details[open] .faq-chevron { @apply rotate-180; }
 }

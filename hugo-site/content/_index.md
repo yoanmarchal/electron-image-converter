@@ -1,3 +1,3 @@
 ---
-title: "Image Converter - Convertissez vos images facilement"
+title: "Image Converter"
 ---

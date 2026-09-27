@@ -1,0 +1,4 @@
+{{- $class := .class | default "size-8" -}}
+<span class="{{ $class }} inline-grid shrink-0 place-items-center rounded-[28%] bg-linear-to-br from-brand-400 to-brand-600 text-white shadow-md shadow-brand-500/30 ring-1 ring-white/20 ring-inset">
+  {{ partial "icon.html" (dict "name" "image-up" "class" "size-[55%]") }}
+</span>

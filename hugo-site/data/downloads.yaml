@@ -1,0 +1,34 @@
+# Chaque entrée est reliée à un fichier de la dernière release GitHub par `match`
+# (expression régulière testée sur le nom de l'asset dans assets/js/main.js).
+windows:
+  name: Windows
+  requirements: Windows 10 ou plus récent · x64
+  note: Mises à jour automatiques intégrées.
+  files:
+    - id: win-x64
+      label: Installateur .exe
+      arch: x64
+      match: 'setup.*\.exe$'
+      primary: true
+linux:
+  name: Linux
+  requirements: Ubuntu 18.04+ ou équivalent · x64 et arm64
+  note: Nouvelle version à installer depuis cette page.
+  files:
+    - id: deb-x64
+      label: Paquet .deb
+      arch: x64
+      match: 'linux-amd64\.deb$'
+      primary: true
+    - id: deb-arm64
+      label: Paquet .deb
+      arch: arm64
+      match: 'linux-arm64\.deb$'
+    - id: appimage-x64
+      label: AppImage
+      arch: x64
+      match: 'linux-x86_64\.AppImage$'
+    - id: appimage-arm64
+      label: AppImage
+      arch: arm64
+      match: 'linux-arm64\.AppImage$'

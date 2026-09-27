@@ -1,0 +1,82 @@
+{{- /* Reproduction simplifiée de l'interface de l'application (décorative). */ -}}
+{{- $files := slice
+  (dict "name" "vacances-plage.jpg" "from" "4,2 Mo" "to" "812 Ko" "gain" "-81 %" "tint" "from-sky-300 via-cyan-200 to-amber-200" "state" "done")
+  (dict "name" "portrait-studio.png" "from" "6,8 Mo" "to" "1,1 Mo" "gain" "-84 %" "tint" "from-rose-300 via-orange-200 to-amber-100" "state" "done")
+  (dict "name" "logo-anime.gif" "from" "1,9 Mo" "to" "" "gain" "" "tint" "from-violet-400 via-fuchsia-300 to-pink-200" "state" "progress")
+  (dict "name" "montagne.tiff" "from" "22 Mo" "to" "" "gain" "" "tint" "from-emerald-300 via-teal-200 to-sky-200" "state" "queued")
+-}}
+<figure class="overflow-hidden rounded-2xl bg-white text-left shadow-2xl ring-1 shadow-zinc-900/10 ring-zinc-900/10 dark:bg-zinc-900 dark:shadow-black/40 dark:ring-white/10" role="img" aria-label="Aperçu de l'application : quatre images en cours de conversion vers WebP avec une qualité de 80 %">
+  <div class="flex h-10 items-center gap-2 border-b border-zinc-200 bg-zinc-50 px-4 dark:border-zinc-800 dark:bg-zinc-950/60" aria-hidden="true">
+    <span class="size-3 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
+    <span class="size-3 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
+    <span class="size-3 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
+    <span class="mx-auto flex items-center gap-2 text-xs font-medium text-zinc-500">
+      {{ partial "logo.html" (dict "class" "size-4") }} Image Converter
+    </span>
+    <span class="w-13"></span>
+  </div>
+
+  <div class="grid md:grid-cols-[1fr_17rem]" aria-hidden="true">
+    <div class="space-y-4 p-4 sm:p-6">
+      <div class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-brand-300 bg-brand-50/60 px-4 py-6 text-center dark:border-brand-700/60 dark:bg-brand-950/30">
+        <span class="grid size-10 place-items-center rounded-full bg-brand-100 text-brand-600 dark:bg-brand-900/60 dark:text-brand-300">
+          {{ partial "icon.html" (dict "name" "upload" "class" "size-5") }}
+        </span>
+        <p class="mt-2 text-sm font-medium">Glissez-déposez vos images ici</p>
+        <p class="text-xs text-zinc-500">JPEG, PNG, GIF, TIFF, WebP, AVIF</p>
+      </div>
+
+      <ul class="divide-y divide-zinc-100 rounded-xl ring-1 ring-zinc-200 dark:divide-zinc-800 dark:ring-zinc-800">
+        {{ range $files }}
+          <li class="flex items-center gap-3 px-3 py-2.5">
+            <span class="size-9 shrink-0 rounded-md bg-linear-to-br {{ .tint }}"></span>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-sm font-medium">{{ .name }}</p>
+              {{ if eq .state "done" }}
+                <p class="font-mono text-xs text-zinc-500">{{ .from }} → <span class="text-zinc-900 dark:text-zinc-200">{{ .to }}</span></p>
+              {{ else if eq .state "progress" }}
+                <div class="mt-1.5 h-1.5 w-full max-w-48 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800"><div class="h-full w-3/5 rounded-full bg-brand-500"></div></div>
+              {{ else }}
+                <p class="font-mono text-xs text-zinc-500">{{ .from }} · en attente</p>
+              {{ end }}
+            </div>
+            {{ if eq .state "done" }}
+              <span class="rounded-full bg-emerald-50 px-2 py-0.5 font-mono text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">{{ .gain }}</span>
+              <span class="hidden text-emerald-500 sm:block">{{ partial "icon.html" (dict "name" "check" "class" "size-4") }}</span>
+            {{ else if eq .state "progress" }}
+              <span class="font-mono text-xs text-brand-600 dark:text-brand-400">60 %</span>
+            {{ end }}
+          </li>
+        {{ end }}
+      </ul>
+    </div>
+
+    <aside class="hidden space-y-5 border-l border-zinc-200 bg-zinc-50/70 p-5 md:block dark:border-zinc-800 dark:bg-zinc-950/40">
+      <p class="flex items-center gap-2 text-sm font-semibold">
+        <span class="text-brand-500">{{ partial "icon.html" (dict "name" "sliders-horizontal" "class" "size-4") }}</span>
+        Paramètres de conversion
+      </p>
+      <div>
+        <p class="mb-1.5 text-xs font-medium text-zinc-500">Format de sortie</p>
+        <div class="flex items-center justify-between rounded-md bg-white px-3 py-2 text-sm ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-700">
+          WebP {{ partial "icon.html" (dict "name" "chevron-down" "class" "size-4 text-zinc-400") }}
+        </div>
+      </div>
+      <div>
+        <p class="mb-2 text-xs font-medium text-zinc-500">Qualité : 80 %</p>
+        <div class="relative h-2 rounded-full bg-zinc-200 dark:bg-zinc-800">
+          <div class="h-full w-4/5 rounded-full bg-brand-500"></div>
+          <span class="absolute top-1/2 left-4/5 size-4 -translate-1/2 rounded-full border-[3px] border-white bg-brand-500 shadow dark:border-zinc-900"></span>
+        </div>
+        <p class="mt-2 text-xs text-zinc-500">Haute qualité, fichier plus grand</p>
+      </div>
+      <div>
+        <p class="mb-1.5 text-xs font-medium text-zinc-500">Dossier de sortie</p>
+        <div class="flex items-center gap-2 truncate rounded-md bg-white px-3 py-2 text-xs text-zinc-500 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-700">
+          {{ partial "icon.html" (dict "name" "folder-open" "class" "size-3.5 shrink-0") }} Même dossier que l'original
+        </div>
+      </div>
+      <div class="rounded-md bg-brand-500 py-2.5 text-center text-sm font-medium text-white shadow-sm">Convertir 4 images</div>
+    </aside>
+  </div>
+</figure>

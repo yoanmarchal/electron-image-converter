@@ -1,0 +1,25 @@
+<section class="py-24 sm:py-32">
+  <div class="container-page">
+    <div class="mx-auto max-w-2xl text-center" data-reveal>
+      <p class="eyebrow">Comment ça marche</p>
+      <h2 class="section-title">Trois étapes, quelques secondes.</h2>
+    </div>
+    <ol class="relative mt-16 grid gap-10 md:grid-cols-3 md:gap-6">
+      <div class="absolute top-7 right-[16%] left-[16%] hidden h-px bg-linear-to-r from-transparent via-zinc-300 to-transparent md:block dark:via-zinc-700" aria-hidden="true"></div>
+      {{ range $i, $s := slice
+        (dict "icon" "image-up" "title" "Déposez" "text" "Glissez vos images dans la fenêtre, une seule ou tout un dossier.")
+        (dict "icon" "sliders-horizontal" "title" "Réglez" "text" "Choisissez le format de sortie, la qualité et le dossier de destination.")
+        (dict "icon" "sparkles" "title" "Convertissez" "text" "Suivez la progression en temps réel et récupérez vos fichiers allégés.")
+      }}
+        <li data-reveal class="relative text-center" style="animation-delay:{{ mul $i 0.1 }}s">
+          <span class="relative mx-auto grid size-14 place-items-center rounded-2xl bg-white text-brand-600 shadow-lg ring-1 shadow-zinc-900/5 ring-zinc-200 dark:bg-zinc-900 dark:text-brand-400 dark:ring-zinc-800">
+            {{ partial "icon.html" (dict "name" $s.icon "class" "size-6") }}
+            <span class="absolute -top-2 -right-2 grid size-6 place-items-center rounded-full bg-zinc-900 font-mono text-xs text-white dark:bg-white dark:text-zinc-900">{{ add $i 1 }}</span>
+          </span>
+          <h3 class="mt-6 text-lg font-semibold">{{ $s.title }}</h3>
+          <p class="mx-auto mt-2 max-w-xs text-zinc-600 dark:text-zinc-400">{{ $s.text }}</p>
+        </li>
+      {{ end }}
+    </ol>
+  </div>
+</section>

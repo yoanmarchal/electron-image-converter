@@ -1,0 +1,24 @@
+<section id="faq" class="pb-24 sm:pb-32">
+  <div class="container-page grid gap-12 lg:grid-cols-[1fr_2fr]">
+    <div data-reveal>
+      <p class="eyebrow">FAQ</p>
+      <h2 class="section-title">Questions fréquentes</h2>
+      <p class="section-lead">Une autre question ?
+        <a href="{{ site.Params.github }}/issues" class="font-medium text-brand-600 underline decoration-brand-600/30 underline-offset-4 hover:decoration-brand-600 dark:text-brand-400">Ouvrez une issue</a>.
+      </p>
+    </div>
+    <div class="divide-y divide-zinc-200 border-y border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+      {{ range site.Data.faq }}
+        <details data-reveal class="group py-2">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-6 rounded-lg py-4 text-left text-lg font-medium">
+            {{ .q }}
+            <span class="faq-chevron grid size-8 shrink-0 place-items-center rounded-full ring-1 ring-zinc-200 transition group-hover:bg-zinc-50 dark:ring-zinc-800 dark:group-hover:bg-zinc-900">
+              {{ partial "icon.html" (dict "name" "chevron-down" "class" "size-4") }}
+            </span>
+          </summary>
+          <p class="pr-14 pb-5 text-zinc-600 dark:text-zinc-400 [&_code]:rounded [&_code]:bg-zinc-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-sm dark:[&_code]:bg-zinc-800 [&_strong]:font-medium [&_strong]:text-zinc-900 dark:[&_strong]:text-white">{{ .a | safeHTML }}</p>
+        </details>
+      {{ end }}
+    </div>
+  </div>
+</section>
