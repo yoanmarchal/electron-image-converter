@@ -29,6 +29,23 @@ export async function assertImageFile(filePath) {
   return fileStat;
 }
 
+// Côté du carré affiché dans la liste (48 px), doublé pour les écrans haute densité
+const THUMBNAIL_SIZE = 96;
+
+/**
+ * Miniature de l'image en data URL. Générée par sharp plutôt que par le navigateur :
+ * Chromium ne sait pas afficher le TIFF, et l'aperçu ne garde pas l'image entière en mémoire.
+ */
+export async function createThumbnail(filePath) {
+  await assertImageFile(filePath);
+  const buffer = await sharp(filePath)
+    .autoOrient()
+    .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE, { fit: 'cover' })
+    .webp({ quality: 80 })
+    .toBuffer();
+  return `data:image/webp;base64,${buffer.toString('base64')}`;
+}
+
 async function fileExists(filePath) {
   try {
     await access(filePath);

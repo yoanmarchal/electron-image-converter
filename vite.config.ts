@@ -11,7 +11,7 @@ const PRODUCTION_CSP = [
   "default-src 'self'",
   "script-src 'self'",
   "style-src 'self'",
-  "img-src 'self' blob: data: local-file:",
+  "img-src 'self' data:",
   "font-src 'self'",
   "connect-src 'self'",
   "object-src 'none'",

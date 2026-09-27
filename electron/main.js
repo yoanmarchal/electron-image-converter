@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog, protocol, shell, net } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
 import { join, dirname, resolve, isAbsolute } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import isDev from 'electron-is-dev';
@@ -10,6 +10,7 @@ import {
   getExtension,
   assertImageFile,
   convertImage,
+  createThumbnail,
 } from './imageConversion.js';
 import squirrelStartup from 'electron-squirrel-startup';
 
@@ -34,16 +35,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const DEV_SERVER_URL = 'http://localhost:5173';
 const INDEX_HTML = join(__dirname, '../dist/index.html');
 
-// Le protocole doit être déclaré avant l'événement ready
-protocol.registerSchemesAsPrivileged([
-  { scheme: 'local-file', privileges: { standard: true, secure: true } },
-]);
-
 // Initialize store for app settings
 const store = new Store();
 
-// Chemins choisis par l'utilisateur via les boîtes de dialogue natives
-const previewablePaths = new Set();
+// Dossiers de sortie choisis par l'utilisateur via la boîte de dialogue native
 const allowedOutputDirs = new Set();
 
 let mainWindow;
@@ -121,19 +116,6 @@ function createWindow() {
   }
 }
 
-// Configurer le protocole personnalisé
-const registerProtocols = () => {
-  // Aperçus des images sélectionnées : local-file://preview/<chemin encodé>
-  protocol.handle('local-file', (request) => {
-    const filePath = decodeURIComponent(new URL(request.url).pathname.slice(1));
-    if (!previewablePaths.has(filePath)) {
-      log.warn(`Aperçu refusé : ${filePath}`);
-      return new Response('Forbidden', { status: 403 });
-    }
-    return net.fetch(pathToFileURL(filePath).href);
-  });
-};
-
 // Empêcher la page de quitter l'application ou d'ouvrir d'autres fenêtres
 // (par exemple en déposant un fichier .html en dehors de la zone de dépôt)
 app.on('web-contents-created', (_, contents) => {
@@ -158,7 +140,6 @@ app.whenReady().then(() => {
     return;
   }
 
-  registerProtocols();
   createWindow();
 
   updateElectronApp({
@@ -193,17 +174,7 @@ handle('select-files', async () => {
     ],
   });
 
-  if (!result.canceled) {
-    // Convertir les chemins en URLs avec notre protocole personnalisé
-    return result.filePaths.map(path => {
-      previewablePaths.add(path);
-      return {
-        path,
-        previewUrl: `local-file://preview/${encodeURIComponent(path)}`,
-      };
-    });
-  }
-  return [];
+  return result.canceled ? [] : result.filePaths;
 });
 
 handle('select-output-dir', async () => {
@@ -221,12 +192,16 @@ handle('select-output-dir', async () => {
 handle('get-image-info', async (filePath) => {
   try {
     const fileStat = await assertImageFile(filePath);
-    const metadata = await sharp(filePath).metadata();
+    const [metadata, thumbnail] = await Promise.all([
+      sharp(filePath).metadata(),
+      createThumbnail(filePath),
+    ]);
     return {
       format: metadata.format,
       width: metadata.width,
       height: metadata.height,
       size: fileStat.size,
+      thumbnail,
     };
   } catch (error) {
     console.error('Error getting image info:', error);
