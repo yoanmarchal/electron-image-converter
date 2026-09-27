@@ -25,11 +25,11 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm">
+    <header className="bg-white dark:bg-gray-800 shadow-xs">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
+            <div className="shrink-0 flex items-center">
               <ImageDown className="h-8 w-8 text-teal-500" />
               <span className="ml-2 text-xl font-semibold text-gray-900 dark:text-white">
                 Image Converter
@@ -79,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
               onClick={toggleDarkMode}
               title={isDarkMode ? 'Passer en mode clair' : 'Passer en mode sombre'}
               aria-label={isDarkMode ? 'Passer en mode clair' : 'Passer en mode sombre'}
-              className="p-2 rounded-full text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors"
+              className="p-2 rounded-full text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors"
             >
               {isDarkMode ? (
                 <Sun className="h-5 w-5" />
