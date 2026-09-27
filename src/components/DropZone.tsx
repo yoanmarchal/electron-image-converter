@@ -27,7 +27,7 @@ interface ImageInfo {
  * getAsFileSystemHandle().getFile(), dont les File n'ont pas de chemin sur le disque :
  * webUtils.getPathForFile renverrait alors une chaîne vide.
  */
-async function getNativeFilesFromEvent(event: DropEvent): Promise<Array<File | DataTransferItem>> {
+async function getNativeFilesFromEvent(event: DropEvent | FileSystemFileHandle[]): Promise<Array<File | DataTransferItem>> {
   if (Array.isArray(event)) return [];
 
   if ('dataTransfer' in event && event.dataTransfer) {
@@ -42,7 +42,6 @@ async function getNativeFilesFromEvent(event: DropEvent): Promise<Array<File | D
 }
 
 const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, className = '' }) => {
-  const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -130,10 +129,7 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, isConverting, clas
     useFsAccessApi: false,
   });
 
-  // Update isDragging state based on isDragActive
-  React.useEffect(() => {
-    setIsDragging(isDragActive);
-  }, [isDragActive]);
+  const isDragging = isDragActive;
 
   return (
     <div 
